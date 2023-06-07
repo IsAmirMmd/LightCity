@@ -8,11 +8,11 @@ import java.sql.*;
 public class Database {
 
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://localhost/lightcity";
+    static final String DB_URL = "jdbc:mysql://localhost:3306/lightcity";
 
     // Database credentials
-    static final String USER = "your_username";
-    static final String PASS = "your_password";
+    static final String USER = "root";
+    static final String PASS = "";
 
 
     private Connection conn;
@@ -35,12 +35,11 @@ public class Database {
 
     private void createTables() {
 //        query example
-        String query = "CREATE TABLE IF NOT EXISTS Users (username varchar(255) primary key ,password varchar(255));" +
-                "CREATE TABLE IF NOT EXISTS ....";
+        String query = "CREATE TABLE IF NOT EXISTS Users (username varchar(255) primary key ,password varchar(255))";
         try {
             Statement stmt = conn.createStatement();
            if(stmt.execute(query)){
-
+//               do nothing
            }else
                System.out.println("An error accord during operation");
         } catch (SQLException e) {

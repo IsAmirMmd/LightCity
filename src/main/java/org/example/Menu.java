@@ -6,6 +6,8 @@ import java.util.Scanner;
 
 public class Menu {
     private static Game game = new Game();
+
+    private static Database database = new Database();
     private static Scanner scanner = new Scanner(System.in);
     public static void showMenu(){
        mainMenu();
