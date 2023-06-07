@@ -24,11 +24,22 @@ public class Menu {
     }
 
     public static void mainMenu() {
-        System.out.println("welcome");
+        System.out.println("   *** welcome to lightcity ***");
+        System.out.println("**********************************");
+        System.out.println("*     continue game    [1]       *");
+        System.out.println("*     start game       [2]       *");
+        System.out.println("*     join server      [3]       *");
+        System.out.println("*     exit             [4]       *");
+        System.out.println("**********************************");
+        System.out.println("enter your command : ");
     }
 
     public static User loginMenu() {
 //       get user info : username, password
+        System.out.println("enter your username :");
+        String usname = scanner.nextLine();
+        System.out.println("enter your password :");
+        String psname = scanner.nextLine();
         return null;
     }
 
