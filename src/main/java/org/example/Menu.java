@@ -36,11 +36,21 @@ public class Menu {
 
     public static User loginMenu() {
 //       get user info : username, password
+        Scanner myobj = new Scanner(System.in);
         System.out.println("enter your username :");
-        String usname = scanner.nextLine();
+        String usname = myobj.nextLine();
         System.out.println("enter your password :");
-        String psname = scanner.nextLine();
+        String psname = myobj.nextLine();
         return null;
+    }
+
+    public static User signupMenu(){
+        Scanner myobj = new Scanner(System.in);
+        System.out.println("enter your username :");
+        String usname = myobj.nextLine();
+        System.out.println("enter your password :");
+        String psname = myobj.nextLine();
+        return null;        
     }
 
     private static void joinServer() {
