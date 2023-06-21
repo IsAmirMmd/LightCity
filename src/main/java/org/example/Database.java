@@ -53,17 +53,18 @@ public class Database {
 
     }
 
-    public void loginGame(User user) {
+    public static User loginGame(User user) {
         try {
-            Statement stmt = conn.createStatement();
-            String query = "";
-            ResultSet res = stmt.executeQuery(query);
-            while (res.next()) {
-//               Check
+            if (!isValid(user)) {
+                return user;
+            } else {
+                System.out.println("we don't have user with these details!");
+                System.out.println("you can check your information and enter it again.");
+                return null;
             }
         } catch (Exception exception) {
         }
-
+        return null;
     }
 
     public static void saveProperty(Property property) {
@@ -83,8 +84,7 @@ public class Database {
             statement.setFloat(4, yCoordinate);
             if (property.getOwner() == null) {
                 statement.setString(5, "mayor");
-            }
-            else {
+            } else {
                 statement.setString(5, property.getOwner().getUserInfo().getUsername());
             }
             statement.executeUpdate();
@@ -130,7 +130,53 @@ public class Database {
         return properties;
     }
 
-    public void registerGame(User user) {
+    public static boolean isValid(User user) {
+        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS)) {
+            String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, user.getUsername());
+            statement.setString(2, user.getPassword());
+
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return false;
+            } else {
+                return true;
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        return false;
+    }
+
+    public static User registerGame(User user) {
+        boolean isValidForReg = isValid(user);
+        if (isValidForReg) {
+            String insertQuery = "INSERT INTO users (username, password) VALUES (?, ?)";
+
+            try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+                 PreparedStatement statement = connection.prepareStatement(insertQuery)) {
+
+                String UserName = user.getUsername();
+                String passWord = user.getPassword();
+
+                statement.setString(1, UserName);
+                statement.setString(2, passWord);
+                statement.executeUpdate();
+
+                System.out.println("user has been saved to the database.");
+                return user;
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("we have this user in our database");
+            System.out.println("please back to the pre page and login with userName");
+            return null;
+        }
+        return null;
     }
 
 }
