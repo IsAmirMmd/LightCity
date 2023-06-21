@@ -14,7 +14,11 @@ public class User {
     }
 
     public String getUsername() {
+        if (this.getUsername()==null){
+            return "null";
+        }
         return username;
+
     }
 
     public void setUsername(String username) {
