@@ -2,6 +2,7 @@ package org.example;
 
 import org.example.models.User;
 
+import javax.crypto.spec.PSource;
 import java.util.Scanner;
 
 public class Menu {
@@ -16,7 +17,7 @@ public class Menu {
         if (next.equals("1")) {
             game.continueGame(loginMenu());
         } else if (next.equals("2")) {
-            game.startGame(loginMenu());
+            game.startGame(signupMenu());
         } else if (next.equals("3")) {
             joinServer();
         } else if (next.equals("4"))
@@ -41,16 +42,51 @@ public class Menu {
         String usname = myobj.nextLine();
         System.out.println("enter your password :");
         String psname = myobj.nextLine();
+        User tempUser = new User(usname, psname);
+        if (Database.loginGame(tempUser) != null) {
+            return tempUser;
+        } else {
+            System.out.println("1. go back to login page");
+            System.out.println("2. go to signUp page");
+            System.out.println("0. exit");
+            int num = myobj.nextInt();
+            switch (num) {
+                case 1:
+                    loginMenu();
+                    break;
+                case 2:
+                    signupMenu();
+                    break;
+                case 0:
+                    System.exit(0);
+            }
+        }
         return null;
+
     }
 
-    public static User signupMenu(){
+    public static User signupMenu() {
         Scanner myobj = new Scanner(System.in);
         System.out.println("enter your username :");
         String usname = myobj.nextLine();
         System.out.println("enter your password :");
         String psname = myobj.nextLine();
-        return null;        
+        User signUpUser = new User(usname, psname);
+        if (Database.registerGame(signUpUser) != null)
+            return signUpUser;
+        else {
+            System.out.println("1. go back to login page");
+            System.out.println("0. exit");
+            int num = myobj.nextInt();
+            switch (num) {
+                case 1:
+                    loginMenu();
+                    break;
+                case 0:
+                    System.exit(0);
+            }
+        }
+        return null;
     }
 
     private static void joinServer() {
