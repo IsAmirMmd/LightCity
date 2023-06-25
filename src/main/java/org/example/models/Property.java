@@ -7,9 +7,9 @@ import java.util.Random;
 public class Property {
     private float[] scales;
     private float[] coordinate;
-    private Character owner ;
+    private Character owner;
     private Random random = new Random();
-    private static int id;
+    private int id;
     private boolean ForSale = true;
 
     public Property(float[] scales, float[] coordinate, Character owner) {
@@ -36,7 +36,7 @@ public class Property {
     }
 
     public void setId(int id) {
-        Property.id = id;
+        this.id = id;
     }
 
     public void setScales(float[] scales) {

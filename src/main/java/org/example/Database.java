@@ -44,8 +44,7 @@ public class Database {
             Statement stmt = conn.createStatement();
             if (stmt.execute(query)) {
 //               do nothing
-            } else
-                System.out.println("An error accord during operation");
+            } else System.out.println("An error accord during operation");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -70,8 +69,7 @@ public class Database {
     public static void saveProperty(Property property) {
         String insertQuery = "INSERT INTO properties (width, height, x_coordinate, y_coordinate, owner) VALUES (  ?, ?, ?, ?, ?)";
 
-        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
-             PreparedStatement statement = connection.prepareStatement(insertQuery)) {
+        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS); PreparedStatement statement = connection.prepareStatement(insertQuery)) {
 
             float width = property.getScales()[0];
             float height = property.getScales()[1];
@@ -100,8 +98,7 @@ public class Database {
     public static ArrayList<Property> LoadProperties() {
         ArrayList<Property> properties = new ArrayList<>();
 
-        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
-             Statement statement = connection.createStatement()) {
+        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS); Statement statement = connection.createStatement()) {
 
             // Execute a SELECT query
             String sql = "SELECT * FROM properties";
@@ -155,8 +152,7 @@ public class Database {
         if (isValidForReg) {
             String insertQuery = "INSERT INTO users (username, password) VALUES (?, ?)";
 
-            try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
-                 PreparedStatement statement = connection.prepareStatement(insertQuery)) {
+            try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS); PreparedStatement statement = connection.prepareStatement(insertQuery)) {
 
                 String UserName = user.getUsername();
                 String passWord = user.getPassword();
@@ -179,4 +175,25 @@ public class Database {
         return null;
     }
 
+    public static void BuyProperty(Character owner, Property tempProperty) {
+        String sql = "UPDATE properties SET owner=?, ForSale=? WHERE id=?";
+        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            if (owner == null) {
+                statement.setString(1, "root");
+            } else {
+                statement.setString(1, owner.getUserInfo().getUsername());
+            }
+            statement.setBoolean(2, false);
+            System.out.println(tempProperty.getId());
+            statement.setInt(3, tempProperty.getId());
+
+            statement.executeUpdate();
+            statement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
+
