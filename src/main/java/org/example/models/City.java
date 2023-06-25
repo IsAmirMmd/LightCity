@@ -24,7 +24,8 @@ public class City implements CityInterface {
         characters = new ArrayList<>();
         municipality = new Municipality();
 //        Get Bank Property from municipality
-        bankSystem = new Bank(new Property(new float[]{12, 32}, new float[]{42, 32}, root), root);
+//        bank has bought for one time
+        bankSystem = new Bank(municipality.buyProperty(new float[]{40, 40}, new float[]{70, 170}, root), root);
         stockMarket = new StockMarket();
         stockMarket.startMarketSimulation();
     }
