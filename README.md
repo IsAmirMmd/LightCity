@@ -1,7 +1,13 @@
 # Contributing :
+1. **AmirMmd LotfiPour** :
+   - database
+   - authentication
+   - city builder ...
+4. **ALi Nosrati** :
+   - menu
+   - character modifier ...
 
-1. **AmirMmd LotfiPour** :  database authentication and city builder ...
-2. **ALi Nosrati** : menu and character modifier ...
+---
 
 # Growing In Lightcity Project
 
