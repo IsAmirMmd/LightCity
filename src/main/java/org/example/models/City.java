@@ -38,11 +38,11 @@ public class City implements CityInterface {
         stockMarket.startMarketSimulation();
     }
 
-    public City(Boolean has,User user) {
+    public City(Boolean has, User user) {
         characters = Database.loadCharacter();
         Character temp = null;
-        for (Character character : characters){
-            if (character.getUserInfo() == user){
+        for (Character character : characters) {
+            if (character.getUserInfo() == user) {
                 temp = character;
             }
         }
@@ -58,6 +58,7 @@ public class City implements CityInterface {
 
         beginGame(temp);
     }
+
     public City(Boolean has) {
         characters = Database.loadCharacter();
         municipality = new Municipality();
@@ -110,9 +111,8 @@ public class City implements CityInterface {
                         case "3" -> Dashboard();
                         case "4" -> Life();
                         case "5" -> {
-                            System.out.println("are you sure?");
-                            System.out.println("enter yes/y ");
-                            if (scanner.next() == "yes" || scanner.next() == "y") {
+                            System.out.println("are you sure?[yes/no]");
+                            if (scanner.next().equals("yes")) {
                                 Exit();
                             } else {
                                 beginGame(character);
