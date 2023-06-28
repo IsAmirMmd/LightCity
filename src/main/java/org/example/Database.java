@@ -129,10 +129,9 @@ public class Database {
 
     public static boolean isValid(User user) {
         try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS)) {
-            String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+            String sql = "SELECT * FROM users WHERE username = ?";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, user.getUsername());
-            statement.setString(2, user.getPassword());
 
             ResultSet rs = statement.executeQuery();
 
@@ -195,5 +194,33 @@ public class Database {
             e.printStackTrace();
         }
     }
+
+    public static void saveCharacter(Character character) {
+        String insertQuery = "INSERT INTO `characters`(`username`, `password`, `money`, `life`, `job`, `location`) VALUES (?,?,?,?,?,?)";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement statement = connection.prepareStatement(insertQuery)) {
+
+            String username = character.getUserInfo().getUsername();
+            String password = character.getUserInfo().getPassword();
+            float money = character.getJob().getIncome();
+            String life = character.getLife().getFood() + "," + character.getLife().getSleep() + "," + character.getLife().getWater();
+            String jobTitle = character.getJob().getTitle();
+            String inLocation = character.getInPosition().getCoordinate()[0] + "," + character.getInPosition().getCoordinate()[1];
+
+            statement.setString(1, username);
+            statement.setString(2, password);
+            statement.setFloat(3, money);
+            statement.setString(4, life);
+            statement.setString(5, jobTitle);
+            statement.setString(6, inLocation);
+
+
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
 

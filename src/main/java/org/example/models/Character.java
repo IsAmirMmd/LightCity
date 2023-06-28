@@ -69,6 +69,14 @@ public class Character implements CharacterInterface {
         this.properties = properties;
     }
 
+    public Property getInPosition() {
+        return inPosition;
+    }
+
+    public void setInPosition(Property inPosition) {
+        this.inPosition = inPosition;
+    }
+
     @Override
     public void positionProcessing() {
 
