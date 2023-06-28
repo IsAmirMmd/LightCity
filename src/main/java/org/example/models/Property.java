@@ -11,12 +11,14 @@ public class Property {
     private Random random = new Random();
     private int id;
     private boolean ForSale = true;
+    private float price;
 
     public Property(float[] scales, float[] coordinate, Character owner) {
         this.id = 000000;
         this.scales = scales;
         this.coordinate = coordinate;
         this.owner = owner;
+        this.price = 4.5f;
     }
 
     public boolean isForSale() {
@@ -57,5 +59,13 @@ public class Property {
 
     public void setCoordinate(float[] coordinate) {
         this.coordinate = coordinate;
+    }
+
+    public float getPrice() {
+        return price;
+    }
+
+    public void setPrice(float price) {
+        this.price = price;
     }
 }

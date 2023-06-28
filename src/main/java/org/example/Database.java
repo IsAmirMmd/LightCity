@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class Database {
 
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://localhost:3307/lightcity";
+    static final String DB_URL = "jdbc:mysql://localhost:3306/lightcity";
 
     // Database credentials
     static final String USER = "root";
@@ -73,7 +73,7 @@ public class Database {
     }
 
     public static void saveProperty(Property property) {
-        String insertQuery = "INSERT INTO properties (width, height, x_coordinate, y_coordinate, owner) VALUES (  ?, ?, ?, ?, ?)";
+        String insertQuery = "INSERT INTO properties (width, height, x_coordinate, y_coordinate, owner,price) VALUES (  ?, ?, ?, ?, ?,?)";
 
         try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS); PreparedStatement statement = connection.prepareStatement(insertQuery)) {
 
@@ -91,6 +91,7 @@ public class Database {
             } else {
                 statement.setString(5, property.getOwner().getUserInfo().getUsername());
             }
+            statement.setFloat(6, property.getPrice());
             statement.executeUpdate();
 
             System.out.println("Properties saved to the database.");
@@ -121,6 +122,8 @@ public class Database {
                 float yCoordinate = rs.getFloat("y_coordinate");
                 String owner = rs.getString("owner");
                 boolean iSForSale = rs.getBoolean("forsale");
+                float price = rs.getFloat("price");
+
                 Property tempProperty = null;
                 if (owner.equals("root")) {
                     tempProperty = new Property(new float[]{width, height}, new float[]{xCoordinate, yCoordinate}, root);
@@ -137,6 +140,7 @@ public class Database {
                 }
                 tempProperty.setId(id);
                 tempProperty.setForSale(iSForSale);
+                tempProperty.setPrice(price);
                 properties.add(tempProperty);
             }
             rs.close();
@@ -214,6 +218,23 @@ public class Database {
             e.printStackTrace();
         }
     }
+
+    public static void readyToSale(Character owner, Property tempProperty, float price) {
+        String sql = "UPDATE properties SET ForSale=? ,price=? WHERE id=?";
+        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setBoolean(1, true);
+            statement.setFloat(2, price);
+
+            statement.setInt(3, tempProperty.getId());
+
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public static void saveCharacter(Character character) {
         String insertQuery = "INSERT INTO `characters`(`username`, `password`, `money`, `life`, `job`, `location`) VALUES (?,?,?,?,?,?)";
