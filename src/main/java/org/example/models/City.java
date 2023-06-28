@@ -1,5 +1,6 @@
 package org.example.models;
 
+import jdk.jshell.execution.LoaderDelegate;
 import org.example.Database;
 import org.example.defualtSystem.Bank;
 import org.example.defualtSystem.Life;
@@ -8,6 +9,7 @@ import org.example.defualtSystem.StockMarket;
 import org.example.interfaces.CityInterface;
 
 import javax.management.Notification;
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -15,7 +17,7 @@ import java.util.Scanner;
 public class City implements CityInterface {
     private final ArrayList<Character> characters;
     private final Bank bankSystem;
-    private final Municipality municipality;
+    public static Municipality municipality;
 
     private final StockMarket stockMarket;
 
@@ -40,9 +42,9 @@ public class City implements CityInterface {
     public City(Boolean has, User user) {
         characters = Database.loadCharacter();
         Character temp = null;
-        for (Character character : characters) {
-            if (character.getUserInfo() == user) {
-                temp = character;
+        for (Character tempCharacter : characters) {
+            if (tempCharacter.getUserInfo().getUsername().equals(user.getUsername())) {
+                temp = tempCharacter;
             }
         }
         municipality = new Municipality();
@@ -90,7 +92,7 @@ public class City implements CityInterface {
     /**
      * Begin Game function generate a new thread for each character ,<b > DO NOT CHANGE THIS FUNCTION STRUCTURE</b> ,
      */
-    private void beginGame(Character character) {
+    public void beginGame(Character character) {
         Thread thread = new Thread(() -> {
             try {
                 Scanner scanner = new Scanner(System.in);
@@ -127,9 +129,57 @@ public class City implements CityInterface {
     }
 
     public void GoTo(Character character) {
-        System.out.println("enter location or id or industry title");
+        System.out.println("enter location or id or industry title from below");
+        System.out.println("**********************");
+        for (Property property : Database.LoadProperties()) {
+            System.out.println("property id    : " + property.getId());
+            System.out.println("title          : " + property.getIndustryTitle());
+            System.out.println("coordinate     : [" + property.getCoordinate()[0] + "," + property.getCoordinate()[1] + "]");
+            System.out.print("for sale       : " + (property.isForSale() ? "yes" : "no"));
+            if (property.getOwner() == character) System.out.println("(you own)");
+            else System.out.println("");
+
+            System.out.println("********");
+        }
+        System.out.println("Tip: if you want travel by coordinate write in this order :(divide it by comma) X,Y");
+
         Scanner MyPlace = new Scanner(System.in);
-        String place = MyPlace.next();
+        String place = MyPlace.nextLine();
+        String placeX = "", placeY = "";
+        float locationX = 0.0f, locationY = 0.0f;
+
+        if (place.contains(",")) {
+            String[] placeXY = place.split(",");
+            placeX = placeXY[0];
+            placeY = placeXY[1];
+
+            locationX = Float.parseFloat(placeX);
+            locationY = Float.parseFloat(placeY);
+        }
+
+        Property location = null;
+        boolean isWrongData = false;
+        for (Property property : Database.LoadProperties()) {
+            if (property.getIndustryTitle().equals(place)) {
+                location = property;
+                isWrongData = true;
+            } else if (String.valueOf(property.getId()).equals(place)) {
+                isWrongData = true;
+                location = property;
+            } else if (locationX == property.getCoordinate()[0] && locationY == property.getCoordinate()[1]) {
+                isWrongData = true;
+                location = property;
+            }
+
+        }
+        if (!isWrongData) {
+            System.out.println("You Enter details wrongly !");
+            System.out.println("please enter again...");
+            GoTo(character);
+        }
+        character.gotToLocation(location);
+        character.positionProcessing();
+
     }
 
     public void Process_location(Character character) {

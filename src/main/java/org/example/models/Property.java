@@ -12,6 +12,7 @@ public class Property {
     private int id;
     private boolean ForSale = true;
     private float price;
+    private String industryTitle;
 
     public Property(float[] scales, float[] coordinate, Character owner) {
         this.id = 000000;
@@ -19,6 +20,7 @@ public class Property {
         this.coordinate = coordinate;
         this.owner = owner;
         this.price = 4.5f;
+        this.industryTitle= "not-industry";
     }
 
     public boolean isForSale() {
@@ -67,5 +69,13 @@ public class Property {
 
     public void setPrice(float price) {
         this.price = price;
+    }
+
+    public String getIndustryTitle() {
+        return industryTitle;
+    }
+
+    public void setIndustryTitle(String industryTitle) {
+        this.industryTitle = industryTitle;
     }
 }

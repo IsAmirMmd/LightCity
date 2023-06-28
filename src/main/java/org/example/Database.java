@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class Database {
 
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://localhost:3306/lightcity";
+    static final String DB_URL = "jdbc:mysql://localhost:3307/lightcity";
 
     // Database credentials
     static final String USER = "root";
@@ -26,6 +26,9 @@ public class Database {
 
 
     private Connection conn;
+
+    public static ArrayList<Character> characters = new ArrayList<>();
+
 
     public Database() {
         try {
@@ -58,6 +61,85 @@ public class Database {
 
     }
 
+    public static ArrayList<Character> loadCharacter() {
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS); Statement statement = connection.createStatement()) {
+
+            // Execute a SELECT query
+            String sql = "SELECT * FROM characters";
+            ResultSet rs = statement.executeQuery(sql);
+            // Process the result set
+            while (rs.next()) {
+
+                String username = rs.getString("username");
+                String pass = rs.getString("password");
+                int money = rs.getInt("money");
+                String life = rs.getString("life");
+                String job = rs.getString("job");
+                String location = rs.getString("location");
+
+
+//                find user bank account
+                BankAccount tempBankAccount = null;
+                for (BankAccount bankAccount : loadBankAccounts()) {
+                    if (bankAccount.getOwner().equals(username)) {
+                        tempBankAccount = bankAccount;
+                        tempBankAccount.setMoney(money);
+                    }
+                }
+//                property arraylist ...
+                ArrayList<Property> ownPro = new ArrayList<>();
+                for (Property temp : LoadProperties()) {
+                    if (temp.getOwner() != null)
+                        if (temp.getOwner().getUserInfo().getUsername().equals(username)) {
+                            ownPro.add(temp);
+                        }
+                }
+//                life details
+                String[] Sep_life = life.split(",");
+                float food = Float.parseFloat(Sep_life[0]);
+                float sleep = Float.parseFloat(Sep_life[1]);
+                float water = Float.parseFloat(Sep_life[2]);
+
+                Life tempLife = new Life(food, water, sleep);
+//
+//                find char job
+                Job UserJob = null;
+                for (Job tempJob : loadJobs()) {
+                    if (tempJob.getTitle().equals(job)) {
+                        UserJob = tempJob;
+                    }
+                }
+
+
+//                find in time coordinate
+                Property tempProperty = null;
+                if (!location.equals("null")) {
+                    String[] Sep_cord = location.split(",");
+                    float x = Float.parseFloat(Sep_cord[0]);
+                    float y = Float.parseFloat(Sep_cord[1]);
+                    for (Property property : LoadProperties()) {
+                        if (property.getCoordinate()[1] == y && property.getCoordinate()[0] == x) {
+                            tempProperty = property;
+                        }
+                    }
+                }
+
+
+//                create temp user
+                User tempUser = new User(username, pass);
+
+                Character character = new Character(tempUser, tempBankAccount, tempLife, UserJob, ownPro, tempProperty);
+                characters.add(character);
+            }
+            rs.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return characters;
+    }
+
     public static User loginGame(User user) {
         try {
             if (!isValid(user)) {
@@ -73,7 +155,7 @@ public class Database {
     }
 
     public static void saveProperty(Property property) {
-        String insertQuery = "INSERT INTO properties (width, height, x_coordinate, y_coordinate, owner,price) VALUES (  ?, ?, ?, ?, ?,?)";
+        String insertQuery = "INSERT INTO properties (width, height, x_coordinate, y_coordinate, owner,price, indtitle) VALUES (  ?, ?, ?, ?, ?,?,?)";
 
         try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS); PreparedStatement statement = connection.prepareStatement(insertQuery)) {
 
@@ -92,6 +174,7 @@ public class Database {
                 statement.setString(5, property.getOwner().getUserInfo().getUsername());
             }
             statement.setFloat(6, property.getPrice());
+            statement.setString(7, property.getIndustryTitle());
             statement.executeUpdate();
 
             System.out.println("Properties saved to the database.");
@@ -123,17 +206,19 @@ public class Database {
                 String owner = rs.getString("owner");
                 boolean iSForSale = rs.getBoolean("forsale");
                 float price = rs.getFloat("price");
+                String industryTitle = rs.getString("indtitle");
 
                 Property tempProperty = null;
+                Character ownerPro = null;
                 if (owner.equals("root")) {
                     tempProperty = new Property(new float[]{width, height}, new float[]{xCoordinate, yCoordinate}, root);
                 } else if (owner.equals("mayor")) {
                     tempProperty = new Property(new float[]{width, height}, new float[]{xCoordinate, yCoordinate}, mayor);
                 } else {
-                    Character ownerPro = null;
-                    for (Character temp : loadCharacter()) {
-                        if (ownerPro.getUserInfo().getUsername().equals(owner)) {
+                    for (Character temp : characters) {
+                        if (temp.getUserInfo().getUsername().equals(owner)) {
                             ownerPro = temp;
+                            break;
                         }
                     }
                     tempProperty = new Property(new float[]{width, height}, new float[]{xCoordinate, yCoordinate}, ownerPro);
@@ -141,6 +226,7 @@ public class Database {
                 tempProperty.setId(id);
                 tempProperty.setForSale(iSForSale);
                 tempProperty.setPrice(price);
+                tempProperty.setIndustryTitle(industryTitle);
                 properties.add(tempProperty);
             }
             rs.close();
@@ -161,6 +247,7 @@ public class Database {
 
             if (rs.next()) {
                 return false;
+
             } else {
                 return true;
             }
@@ -272,84 +359,7 @@ public class Database {
         }
     }
 
-    public static ArrayList<Character> loadCharacter() {
-        ArrayList<Character> characters = new ArrayList<>();
-        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS); Statement statement = connection.createStatement()) {
 
-            // Execute a SELECT query
-            String sql = "SELECT * FROM characters";
-            ResultSet rs = statement.executeQuery(sql);
-
-            // Process the result set
-            while (rs.next()) {
-
-                String username = rs.getString("username");
-                String pass = rs.getString("password");
-                int money = rs.getInt("money");
-                String life = rs.getString("life");
-                String job = rs.getString("job");
-                String location = rs.getString("location");
-
-//                property arraylist ...
-                ArrayList<Property> ownPro = new ArrayList<>();
-                for (Property temp : LoadProperties()) {
-                    if (temp.getOwner() != null) {
-                        if (temp.getOwner().getUserInfo().getUsername().equals(username)) {
-                            ownPro.add(temp);
-                        }
-                    }
-                }
-//                life details
-                String[] Sep_life = life.split(",");
-                float food = Float.parseFloat(Sep_life[0]);
-                float sleep = Float.parseFloat(Sep_life[1]);
-                float water = Float.parseFloat(Sep_life[2]);
-
-                Life tempLife = new Life(food, water, sleep);
-//
-//                find char job
-                Job UserJob = null;
-                for (Job tempJob : loadJobs()) {
-                    if (tempJob.getTitle().equals(job)) {
-                        UserJob = tempJob;
-                    }
-                }
-
-//                find user bank account
-                BankAccount tempBankAccount = null;
-                for (BankAccount bankAccount : loadBankAccounts()) {
-                    if (bankAccount.getOwner().equals(username)) {
-                        tempBankAccount = bankAccount;
-                    }
-                }
-
-//                find in time coordinate
-                Property tempProperty = null;
-                if (!location.equals("null")) {
-                    String[] Sep_cord = location.split(",");
-                    float x = Float.parseFloat(Sep_cord[0]);
-                    float y = Float.parseFloat(Sep_cord[1]);
-                    for (Property property : LoadProperties()) {
-                        if (property.getCoordinate()[1] == y && property.getCoordinate()[0] == x) {
-                            tempProperty = property;
-                        }
-                    }
-                }
-
-
-//                create temp user
-                User tempUser = new User(username, pass);
-
-                Character character = new Character(tempUser, tempBankAccount, tempLife, UserJob, ownPro, tempProperty);
-                characters.add(character);
-            }
-            rs.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return characters;
-    }
 
     public static void updateCharacter(String status, Character character) {
         String updateQuery = "";
@@ -389,7 +399,7 @@ public class Database {
                     String lifeDetails = life.getFood() + "," + life.getSleep() + "," + life.getWater();
                     statement.setString(1, lifeDetails);
                     break;
-                case "bankAccount":
+                case "money":
                     BankAccount bankAccount = character.getAccount();
                     statement.setFloat(1, bankAccount.getMoney());
                     break;
@@ -449,7 +459,9 @@ public class Database {
 
                 BankAccount bankAccount = new BankAccount(username, password, money, date);
                 bankAccounts.add(bankAccount);
+
             }
+            statement.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
