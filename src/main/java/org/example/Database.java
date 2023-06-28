@@ -304,7 +304,7 @@ public class Database {
 
 //                find in time coordinate
                 Property tempProperty = null;
-                if (!location.equals("null")){
+                if (!location.equals("null")) {
                     String[] Sep_cord = location.split(",");
                     float x = Float.parseFloat(Sep_cord[0]);
                     float y = Float.parseFloat(Sep_cord[1]);
@@ -328,6 +328,58 @@ public class Database {
             e.printStackTrace();
         }
         return characters;
+    }
+
+    public static void updateCharacter(String status, Character character) {
+        String updateQuery = "";
+        switch (status) {
+            case "location":
+                updateQuery = "UPDATE characters SET location = ? WHERE username = ?";
+                break;
+            case "job":
+                updateQuery = "UPDATE characters SET job = ? WHERE username = ?";
+                break;
+            case "life":
+                updateQuery = "UPDATE characters SET life = ? WHERE username = ?";
+                break;
+            case "money":
+                updateQuery = "UPDATE characters SET money = ? WHERE username = ?";
+                break;
+            default:
+                System.out.println("Invalid status: " + status);
+                return;
+        }
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement statement = connection.prepareStatement(updateQuery)) {
+
+            switch (status) {
+                case "location":
+                    String location = character.getInPosition() != null ?
+                            character.getInPosition().getCoordinate()[0] + "," + character.getInPosition().getCoordinate()[1] :
+                            "null";
+                    statement.setString(1, location);
+                    break;
+                case "job":
+                    statement.setString(1, character.getJob().getTitle());
+                    break;
+                case "life":
+                    Life life = character.getLife();
+                    String lifeDetails = life.getFood() + "," + life.getSleep() + "," + life.getWater();
+                    statement.setString(1, lifeDetails);
+                    break;
+                case "bankAccount":
+                    BankAccount bankAccount = character.getAccount();
+                    statement.setFloat(1, bankAccount.getMoney());
+                    break;
+            }
+
+            statement.setString(2, character.getUserInfo().getUsername());
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void createBankAccount(BankAccount bankAccount) {
