@@ -69,4 +69,8 @@ public class BankAccount {
         }
         return false;
     }
+
+    public void setMoney(float money) {
+        this.money = money;
+    }
 }

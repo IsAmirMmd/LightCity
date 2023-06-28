@@ -2,6 +2,7 @@ package org.example.defualtSystem;
 
 import org.example.Database;
 import org.example.interfaces.MunicipalityInterface;
+import org.example.models.BankAccount;
 import org.example.models.Character;
 import org.example.models.Property;
 
@@ -12,7 +13,7 @@ import java.util.Random;
 
 public class Municipality implements MunicipalityInterface {
     public static ArrayList<Property> properties = Database.LoadProperties();
-    Random random = new Random();
+    private BankAccount account;
     public final int WIDTH_MAP = 140;
     public final int HEIGHT_MAP = 240;
 
@@ -53,24 +54,21 @@ public class Municipality implements MunicipalityInterface {
     }
 
     public Property buyProperty(float[] scales, float[] coordinate, Character owner) {
+        account = owner.getAccount();
         Property returnProperty = null;
         for (Property tempProperty : properties) {
             if (tempProperty.getScales()[0] == scales[0] && tempProperty.getScales()[1] == scales[1] && tempProperty.getCoordinate()[0] == coordinate[0] && tempProperty.getCoordinate()[1] == coordinate[1]) {
-                System.out.println("W : " + tempProperty.getScales()[0] + " H : " + tempProperty.getScales()[1]);
-                if (true) {
-                    System.out.println("X : " + tempProperty.getCoordinate()[0] + " Y : " + tempProperty.getCoordinate()[1]);
-                    System.out.println(tempProperty.getId());
-                    if (tempProperty.isForSale()) {
-                        Database.BuyProperty(owner, tempProperty);
-                        returnProperty = tempProperty;
-                    } else {
-                        System.out.println("no,you can't");
-                    }
-                }
+                System.out.println("W : " + tempProperty.getScales()[0] + ", H : " + tempProperty.getScales()[1]);
+                System.out.println("X : " + tempProperty.getCoordinate()[0] + ", Y : " + tempProperty.getCoordinate()[1]);
+                returnProperty = tempProperty;
+                owner.setProperties(returnProperty);
+                account.withdraw(owner, tempProperty.getPrice());
+                Database.updateCharacter("money", owner);
+                Database.BuyProperty(owner, tempProperty);
+
             }
         }
-        Property finalReturnProperty = returnProperty;
-        return properties.stream().filter(p -> p.getId() == finalReturnProperty.getId()).findFirst().orElse(null);
+        return returnProperty;
     }
 
     @Override

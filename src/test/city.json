@@ -1,0 +1,38 @@
+{
+  "city": [
+    {
+      "characters": [],
+      "municipality": {
+        "property": [
+          {
+            "coordinates": [
+              40.0,
+              40.0
+            ],
+            "size": [
+              70.0,
+              170.0
+            ]
+          }
+        ]
+      },
+      "bankSystem": {
+        "balance": 0,
+        "property": {
+          "coordinates": [
+            40.0,
+            40.0
+          ],
+          "size": [
+            70.0,
+            170.0
+          ]
+        }
+      },
+      "stockMarket": {
+        "stocks": [],
+        "marketIndex": 0
+      }
+    }
+  ]
+}

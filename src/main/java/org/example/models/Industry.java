@@ -19,6 +19,7 @@ public class Industry extends Property{
         super(property.getScales(),property.getCoordinate(),character);
         this.title = title;
         this.income = income;
+        this.employees = new ArrayList<>();
         startPaySalary();
     }
 
@@ -43,8 +44,8 @@ public class Industry extends Property{
         return employees;
     }
 
-    public void setEmployee(ArrayList<Employee> employee) {
-        this.employees = employee;
+    public void setEmployee(Employee employee) {
+        this.employees.add(employee);
     }
 
     public void startPaySalary(){
