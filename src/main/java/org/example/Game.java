@@ -14,6 +14,7 @@ public class Game implements GameInterface {
 
     @Override
     public void continueGame(User user) {
+        city = new City(true,user);
     }
 
     /**

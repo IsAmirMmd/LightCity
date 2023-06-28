@@ -38,6 +38,26 @@ public class City implements CityInterface {
         stockMarket.startMarketSimulation();
     }
 
+    public City(Boolean has,User user) {
+        characters = Database.loadCharacter();
+        Character temp = null;
+        for (Character character : characters){
+            if (character.getUserInfo() == user){
+                temp = character;
+            }
+        }
+        municipality = new Municipality();
+        Property bankPlace = null;
+        for (Property tempProperty : Database.LoadProperties()) {
+            if (tempProperty.getOwner() == root)
+                bankPlace = tempProperty;
+        }
+        bankSystem = new Bank(bankPlace, root);
+        stockMarket = new StockMarket();
+        stockMarket.startMarketSimulation();
+
+        beginGame(temp);
+    }
     public City(Boolean has) {
         characters = Database.loadCharacter();
         municipality = new Municipality();

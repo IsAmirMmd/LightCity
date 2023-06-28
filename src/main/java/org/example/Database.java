@@ -270,10 +270,14 @@ public class Database {
                 String location = rs.getString("location");
 
 //                property arraylist ...
-                ArrayList<Property> ownPro = LoadProperties().stream()
-                        .filter(pro -> pro.getOwner().getUserInfo().getUsername().equals(username))
-                        .collect(Collectors.toCollection(ArrayList::new));
-
+                ArrayList<Property> ownPro = new ArrayList<>();
+                for (Property temp : LoadProperties()) {
+                    if (temp.getOwner() != null) {
+                        if (temp.getOwner().getUserInfo().getUsername().equals(username)) {
+                            ownPro.add(temp);
+                        }
+                    }
+                }
 //                life details
                 String[] Sep_life = life.split(",");
                 float food = Float.parseFloat(Sep_life[0]);
@@ -299,15 +303,18 @@ public class Database {
                 }
 
 //                find in time coordinate
-                String[] Sep_cord = location.split(",");
-                float x = Float.parseFloat(Sep_cord[0]);
-                float y = Float.parseFloat(Sep_cord[1]);
                 Property tempProperty = null;
-                for (Property property : LoadProperties()) {
-                    if (property.getCoordinate()[1] == y && property.getCoordinate()[0] == x) {
-                        tempProperty = property;
+                if (!location.equals("null")){
+                    String[] Sep_cord = location.split(",");
+                    float x = Float.parseFloat(Sep_cord[0]);
+                    float y = Float.parseFloat(Sep_cord[1]);
+                    for (Property property : LoadProperties()) {
+                        if (property.getCoordinate()[1] == y && property.getCoordinate()[0] == x) {
+                            tempProperty = property;
+                        }
                     }
                 }
+
 
 //                create temp user
                 User tempUser = new User(username, pass);
