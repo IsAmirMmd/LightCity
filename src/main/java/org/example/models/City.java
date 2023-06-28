@@ -7,6 +7,7 @@ import org.example.defualtSystem.Municipality;
 import org.example.defualtSystem.StockMarket;
 import org.example.interfaces.CityInterface;
 
+import javax.management.Notification;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -155,12 +156,19 @@ public class City implements CityInterface {
         System.out.println("myjob             [1]");
         System.out.println("properties        [2]");
         System.out.println("economy           [3]");
+        System.out.println("notifications     [4]");
         System.out.println("enter your command:");
         switch (scanner.next()) {
             case "1" -> My_Job(character);
             case "2" -> Properties(character);
             case "3" -> Economy(character);
+            case "4" -> NotificationCenter(character);
+
         }
+    }
+
+    private void NotificationCenter(Character character) {
+        System.out.println("do sth");
     }
 
     public void My_Job(Character character) {
