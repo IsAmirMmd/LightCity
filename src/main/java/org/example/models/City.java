@@ -7,8 +7,6 @@ import org.example.defualtSystem.Municipality;
 import org.example.defualtSystem.StockMarket;
 import org.example.interfaces.CityInterface;
 
-import javax.xml.crypto.Data;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -106,10 +104,10 @@ public class City implements CityInterface {
                 System.out.println("enter your command : ");
                 while (true) {
                     switch (scanner.next()) {
-                        case "1" -> GoTo();
-                        case "2" -> Process_location();
-                        case "3" -> Dashboard();
-                        case "4" -> Life();
+                        case "1" -> GoTo(character);
+                        case "2" -> Process_location(character);
+                        case "3" -> Dashboard(character);
+                        case "4" -> Life(character);
                         case "5" -> {
                             System.out.println("are you sure?[yes/no]");
                             if (scanner.next().equals("yes")) {
@@ -127,118 +125,118 @@ public class City implements CityInterface {
         thread.start();
     }
 
-    public void GoTo() {
+    public void GoTo(Character character) {
         System.out.println("enter location or id or industry title");
         Scanner MyPlace = new Scanner(System.in);
         String place = MyPlace.next();
     }
 
-    public void Process_location() {
+    public void Process_location(Character character) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("showing where is character               [1]");
         System.out.println("showing option according to industry     [2]");
         System.out.println("enter your command:");
         switch (scanner.next()) {
-            case "1" -> Character_Location();
-            case "2" -> Ownership_Detail();
+            case "1" -> Character_Location(character);
+            case "2" -> Ownership_Detail(character);
         }
     }
 
-    public void Character_Location() {
+    public void Character_Location(Character character) {
         System.out.println("do somethimg");
     }
 
-    public void Ownership_Detail() {
+    public void Ownership_Detail(Character character) {
         System.out.println("do something");
     }
 
-    public void Dashboard() {
+    public void Dashboard(Character character) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("myjob             [1]");
         System.out.println("properties        [2]");
         System.out.println("economy           [3]");
         System.out.println("enter your command:");
         switch (scanner.next()) {
-            case "1" -> My_Job();
-            case "2" -> Properties();
-            case "3" -> Economy();
+            case "1" -> My_Job(character);
+            case "2" -> Properties(character);
+            case "3" -> Economy(character);
         }
     }
 
-    public void My_Job() {
+    public void My_Job(Character character) {
         System.out.println("do something");
     }
 
-    public void Properties() {
+    public void Properties(Character character) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("show properties         [1]");
         System.out.println("sell                    [2]");
         System.out.println("management              [3]");
         System.out.println("found industry          [4]");
         switch (scanner.next()) {
-            case "1" -> Show_Properties();
-            case "2" -> sell();
-            case "3" -> Management();
-            case "4" -> Found_Industry();
+            case "1" -> Show_Properties(character);
+            case "2" -> sell(character);
+            case "3" -> Management(character);
+            case "4" -> Found_Industry(character);
         }
     }
 
-    public void Show_Properties() {
+    public void Show_Properties(Character character) {
         System.out.println("do something");
     }
 
-    public void sell() {
+    public void sell(Character character) {
         System.out.println("do something");
     }
 
-    public void Management() {
+    public void Management(Character character) {
         System.out.println("do something");
     }
 
-    public void Found_Industry() {
+    public void Found_Industry(Character character) {
         System.out.println("do something");
     }
 
-    public void Economy() {
+    public void Economy(Character character) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("show incomes          [1]");
         System.out.println("show job detail       [2]");
         System.out.println("enter your command:");
         switch (scanner.next()) {
-            case "1" -> Show_Incomes();
-            case "2" -> Show_Job_Detail();
+            case "1" -> Show_Incomes(character);
+            case "2" -> Show_Job_Detail(character);
         }
     }
 
-    public void Show_Incomes() {
+    public void Show_Incomes(Character character) {
         System.out.println("do something");
     }
 
-    public void Show_Job_Detail() {
+    public void Show_Job_Detail(Character character) {
         System.out.println("do something");
     }
 
-    public void Life() {
+    public void Life(Character character) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("life detail         [1]");
         System.out.println("sleep option        [2]");
         System.out.println("eat option          [3]");
         switch (scanner.next()) {
-            case "1" -> Life_Detail();
-            case "2" -> Sleep();
-            case "3" -> Eat();
+            case "1" -> Life_Detail(character);
+            case "2" -> Sleep(character);
+            case "3" -> Eat(character);
         }
     }
 
-    public void Life_Detail() {
+    public void Life_Detail(Character character) {
         System.out.println("do something");
     }
 
-    public void Sleep() {
+    public void Sleep(Character character) {
         System.out.println("do something");
     }
 
-    public void Eat() {
+    public void Eat(Character character) {
         System.out.println("do something");
     }
 
