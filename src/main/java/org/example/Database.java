@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class Database {
 
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://localhost:3306/lightcity";
+    static final String DB_URL = "jdbc:mysql://localhost:3307/lightcity";
 
     // Database credentials
     static final String USER = "root";
@@ -102,6 +102,8 @@ public class Database {
     }
 
     public static ArrayList<Property> LoadProperties() {
+        Character root = null;
+        Character mayor = null;
         ArrayList<Property> properties = new ArrayList<>();
 
         try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS); Statement statement = connection.createStatement()) {
@@ -119,8 +121,20 @@ public class Database {
                 float yCoordinate = rs.getFloat("y_coordinate");
                 String owner = rs.getString("owner");
                 boolean iSForSale = rs.getBoolean("forsale");
-
-                Property tempProperty = new Property(new float[]{width, height}, new float[]{xCoordinate, yCoordinate}, null);
+                Property tempProperty = null;
+                if (owner.equals("root")) {
+                    tempProperty = new Property(new float[]{width, height}, new float[]{xCoordinate, yCoordinate}, root);
+                } else if (owner.equals("mayor")) {
+                    tempProperty = new Property(new float[]{width, height}, new float[]{xCoordinate, yCoordinate}, mayor);
+                } else {
+                    Character ownerPro = null;
+                    for (Character temp : loadCharacter()) {
+                        if (ownerPro.getUserInfo().getUsername().equals(owner)) {
+                            ownerPro = temp;
+                        }
+                    }
+                    tempProperty = new Property(new float[]{width, height}, new float[]{xCoordinate, yCoordinate}, ownerPro);
+                }
                 tempProperty.setId(id);
                 tempProperty.setForSale(iSForSale);
                 properties.add(tempProperty);
@@ -209,14 +223,18 @@ public class Database {
 
             String username = character.getUserInfo().getUsername();
             String password = character.getUserInfo().getPassword();
-            float money = character.getJob().getIncome();
             String life = character.getLife().getFood() + "," + character.getLife().getSleep() + "," + character.getLife().getWater();
-            String jobTitle = character.getJob().getTitle();
+            String jobTitle = "";
+            if (character.getJob() == null) {
+                jobTitle = "null";
+            } else {
+                jobTitle = character.getJob().getTitle();
+            }
             String inLocation = character.getInPosition().getCoordinate()[0] + "," + character.getInPosition().getCoordinate()[1];
 
             statement.setString(1, username);
             statement.setString(2, password);
-            statement.setFloat(3, money);
+            statement.setFloat(3, 0);
             statement.setString(4, life);
             statement.setString(5, jobTitle);
             statement.setString(6, inLocation);
@@ -288,7 +306,7 @@ public class Database {
 //                create temp user
                 User tempUser = new User(username, pass);
 
-                Character character = new Character(tempUser, tempBankAccount, tempLife,UserJob ,ownPro,tempProperty );
+                Character character = new Character(tempUser, tempBankAccount, tempLife, UserJob, ownPro, tempProperty);
                 characters.add(character);
             }
             rs.close();
@@ -395,7 +413,7 @@ public class Database {
         return jobs;
     }
 
-    public static void createCity(){
+    public static void createCity() {
         String insertQuery = "INSERT INTO `city`(`isCity`) VALUES (?)";
 
         try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);

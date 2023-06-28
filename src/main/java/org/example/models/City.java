@@ -1,11 +1,13 @@
 package org.example.models;
 
+import org.example.Database;
 import org.example.defualtSystem.Bank;
 import org.example.defualtSystem.Life;
 import org.example.defualtSystem.Municipality;
 import org.example.defualtSystem.StockMarket;
 import org.example.interfaces.CityInterface;
 
+import javax.xml.crypto.Data;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +27,26 @@ public class City implements CityInterface {
         municipality = new Municipality();
 //        Get Bank Property from municipality
 //        bank has bought for one time
-        bankSystem = new Bank(municipality.buyProperty(new float[]{40, 40}, new float[]{70, 170}, root), root);
+        Property bankPlace = null;
+        for (Property tempProperty : Database.LoadProperties()) {
+            if (tempProperty.getOwner() == root)
+                bankPlace = tempProperty;
+        }
+        bankSystem = new Bank(bankPlace, root);
+//        bankSystem = new Bank(municipality.buyProperty(new float[]{40, 40}, new float[]{70, 170}, root), root);
+        stockMarket = new StockMarket();
+        stockMarket.startMarketSimulation();
+    }
+
+    public City(Boolean has) {
+        characters = Database.loadCharacter();
+        municipality = new Municipality();
+        Property bankPlace = null;
+        for (Property tempProperty : Database.LoadProperties()) {
+            if (tempProperty.getOwner() == root)
+                bankPlace = tempProperty;
+        }
+        bankSystem = new Bank(bankPlace, root);
         stockMarket = new StockMarket();
         stockMarket.startMarketSimulation();
     }
@@ -33,8 +54,10 @@ public class City implements CityInterface {
     @Override
     public void joinCharacter(User userinfo) {
         BankAccount newAccount = bankSystem.newAccount(userinfo.getUsername(), userinfo.getPassword());
+        Database.createBankAccount(newAccount);
         Character character = new Character(userinfo, newAccount, new Life(), null, null, null);
         characters.add(character);
+        Database.saveCharacter(character);
         beginGame(character);
     }
 

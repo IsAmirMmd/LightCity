@@ -9,25 +9,33 @@ import java.util.ArrayList;
 
 public class Game implements GameInterface {
 
-//    Check Data from Database or file to see There is city or not
+    //    Check Data from Database or file to see There is city or not
     private City city;
+
     @Override
     public void continueGame(User user) {
     }
 
-/** Create new city and Generate new Character
- * @param user : User information contain username, password
- * */
+    /**
+     * Create new city and Generate new Character
+     *
+     * @param user : User information contain username, password
+     */
     @Override
     public void startGame(User user) {
-        generateNewCity();
+        if (Database.hasCity()) {
+            city = new City(true);
+        } else {
+            Database.createCity();
+            generateNewCity();
+        }
         city.joinCharacter(user);
     }
 
     /**
-     * @param ip Server ip address / example : 127.0.0.1
+     * @param ip   Server ip address / example : 127.0.0.1
      * @param port Server open port for specific ip address
-     * */
+     */
     @Override
     public void joinServer(String ip, int port) {
 
