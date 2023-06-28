@@ -230,7 +230,13 @@ public class Database {
             } else {
                 jobTitle = character.getJob().getTitle();
             }
-            String inLocation = character.getInPosition().getCoordinate()[0] + "," + character.getInPosition().getCoordinate()[1];
+            String inLocation = " ";
+
+            if (character.getInPosition() == null) {
+                inLocation = "null";
+            } else {
+                inLocation = character.getInPosition().getCoordinate()[0] + "," + character.getInPosition().getCoordinate()[1];
+            }
 
             statement.setString(1, username);
             statement.setString(2, password);
