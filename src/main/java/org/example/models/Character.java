@@ -115,7 +115,8 @@ public class Character implements CharacterInterface {
                             }
                         }
                     } else if (inTime.getOwner() != mayor && inTime.getOwner() != root && inTime.isForSale()) {
-//                    send requests
+//                        it sends request to property's owner and he/she can check from notification bar
+                        Database.addRequset(inTime.getOwner(), this, inTime);
                     }
                 }
                 case 2 -> {
