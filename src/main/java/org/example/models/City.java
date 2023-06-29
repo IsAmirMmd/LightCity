@@ -1,6 +1,5 @@
 package org.example.models;
 
-import jdk.jshell.execution.LoaderDelegate;
 import org.example.Database;
 import org.example.defualtSystem.Bank;
 import org.example.defualtSystem.Life;
@@ -8,8 +7,6 @@ import org.example.defualtSystem.Municipality;
 import org.example.defualtSystem.StockMarket;
 import org.example.interfaces.CityInterface;
 
-import javax.management.Notification;
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -183,22 +180,65 @@ public class City implements CityInterface {
     }
 
     public void Process_location(Character character) {
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner1 = new Scanner(System.in);
         System.out.println("showing where is character               [1]");
         System.out.println("showing option according to industry     [2]");
         System.out.println("enter your command:");
-        switch (scanner.next()) {
+        switch (scanner1.next()) {
             case "1" -> Character_Location(character);
             case "2" -> Ownership_Detail(character);
         }
     }
 
     public void Character_Location(Character character) {
-        System.out.println("do somethimg");
+        Property inLocation = character.getInPosition();
+        if (inLocation == null) {
+            System.out.println("you are in the base");
+            System.out.println("you can travel and then check your location");
+        } else if (inLocation.getIndustryTitle().equals("not-industry")) {
+            System.out.println("you are here : [" + inLocation.getCoordinate()[0] + "," + inLocation.getCoordinate()[1] + "]");
+        } else if (!inLocation.getIndustryTitle().equals("not-industry")) {
+            System.out.println("you are here : [" + inLocation.getCoordinate()[0] + "," + inLocation.getCoordinate()[1] + "]");
+            System.out.println("at the " + inLocation.getIndustryTitle());
+        }
+        Scanner loca = new Scanner(System.in);
+        System.out.println("what do you want to do now?");
+        System.out.println("showing option according to industry     [1]");
+        System.out.println("back to main menu                        [2]");
+        System.out.println("enter your command:");
+        switch (loca.next()) {
+            case "1" -> Ownership_Detail(character);
+            case "2" -> beginGame(character);
+        }
     }
 
     public void Ownership_Detail(Character character) {
-        System.out.println("do something");
+        Property inLocation = character.getInPosition();
+        if (inLocation == null) {
+            System.out.println("you are in the base");
+            System.out.println("you can travel and then check your location");
+        } else if (inLocation.getIndustryTitle().equals("not-industry")) {
+            System.out.println("you are here : [" + inLocation.getCoordinate()[0] + "," + inLocation.getCoordinate()[1] + "]");
+            System.out.println("you can make your business here :)");
+            if (inLocation.getOwner() != null) {
+                System.out.println("owner of this place is Mr/Ms " + inLocation.getOwner().getUserInfo().getUsername());
+            } else
+                System.out.println("owner of this place is Mayor and his dear wife !");
+        } else if (!inLocation.getIndustryTitle().equals("not-industry")) {
+            System.out.println("you are here : [" + inLocation.getCoordinate()[0] + "," + inLocation.getCoordinate()[1] + "]");
+            System.out.println("at the " + inLocation.getIndustryTitle());
+            if (inLocation.getOwner() != null) {
+                System.out.println("owner of this place is Mr/Ms " + inLocation.getOwner().getUserInfo().getUsername());
+            } else
+                System.out.println("owner of this place is Mayor and his dear wife !");
+        }
+        Scanner owDeta = new Scanner(System.in);
+        System.out.println("what do you want to do now?");
+        System.out.println("back to main menu       [1]");
+        System.out.println("enter your command:");
+        switch (owDeta.next()) {
+            case "1" -> beginGame(character);
+        }
     }
 
     public void Dashboard(Character character) {
