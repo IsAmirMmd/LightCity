@@ -9,6 +9,7 @@ import org.example.interfaces.CityInterface;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Properties;
 import java.util.Scanner;
 
 public class City implements CityInterface {
@@ -128,7 +129,7 @@ public class City implements CityInterface {
     public void GoTo(Character character) {
         System.out.println("enter location or id or industry title from below");
         System.out.println("**********************");
-        municipality.showProperties(character);
+        municipality.showProperties(character, Database.LoadProperties());
         System.out.println("Tip: if you want travel by coordinate write in this order :(divide it by comma) X,Y");
 
         Scanner MyPlace = new Scanner(System.in);
@@ -295,7 +296,68 @@ public class City implements CityInterface {
     }
 
     public void Management(Character character) {
-        System.out.println("do something");
+        System.out.println(character.getUserInfo().getUsername());
+        System.out.println(character.getProperties());
+        System.out.println(character.getProperties().size());
+        Scanner manage = new Scanner(System.in);
+        System.out.println("***********");
+        System.out.println("you can manage your requests and properties from here");
+        System.out.println("* make property ready for sell    [1]  *");
+        System.out.println("* set price for your property     [2]  *");
+        System.out.println("* back to menu                    [3]  *");
+        System.out.println("enter your command : ");
+        switch (manage.nextInt()) {
+            case 1 -> {
+                System.out.println("here is all of your property");
+                municipality.showProperties(character, character.getProperties());
+                System.out.println("which one you want to make ready for sell?");
+                Scanner MyPlace = new Scanner(System.in);
+                String place = MyPlace.nextLine();
+
+                Property location = null;
+                boolean isWrongData = false;
+                for (Property property : Database.LoadProperties()) {
+                    if (String.valueOf(property.getId()).equals(place)) {
+                        isWrongData = true;
+                        location = property;
+                    }
+                }
+                if (!isWrongData) {
+                    System.out.println("You Enter details wrongly !");
+                    System.out.println("please enter again...");
+                    Management(character);
+                }
+                Database.readyToSell(character, location, location.getPrice());
+                System.out.println("you make this property ready to sell!");
+                Management(character);
+            }
+            case 2 -> {
+                System.out.println("here is all of your property");
+                municipality.showProperties(character, character.getProperties());
+                System.out.println("which one you want to change its price?");
+                Scanner MyPlace = new Scanner(System.in);
+                String place = MyPlace.nextLine();
+                Property location = null;
+                boolean isWrongData = false;
+                for (Property property : Database.LoadProperties()) {
+                    if (String.valueOf(property.getId()).equals(place)) {
+                        isWrongData = true;
+                        location = property;
+                    }
+                }
+                if (!isWrongData) {
+                    System.out.println("You Enter details wrongly !");
+                    System.out.println("please enter again...");
+                    Management(character);
+                }
+                System.out.println("enter price : (1.5 < price < 8)");
+                float price = MyPlace.nextFloat();
+                Database.readyToSell(character, location, price);
+                System.out.println("you make this property ready to sell for " + price + "$ !");
+                Management(character);
+            }
+            case 3 -> Properties(character);
+        }
     }
 
     public void Found_Industry(Character character) {

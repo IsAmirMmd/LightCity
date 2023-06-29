@@ -98,11 +98,12 @@ public class Municipality implements MunicipalityInterface {
 
 
     @Override
-    public void showProperties(Character character) {
-        for (Property property : Database.LoadProperties()) {
+    public void showProperties(Character character, ArrayList<Property> properties) {
+        for (Property property : properties) {
             System.out.println("property id    : " + property.getId());
             System.out.println("title          : " + property.getIndustryTitle());
             System.out.println("coordinate     : [" + property.getCoordinate()[0] + "," + property.getCoordinate()[1] + "]");
+            System.out.println("owner          : " + (property.getOwner() != null ? property.getOwner().getUserInfo().getUsername() : "mayor"));
             System.out.print("for sale       : " + (property.isForSale() ? "yes" : "no"));
             if (property.getOwner() == character) System.out.println("(you own)");
             else System.out.println("");
