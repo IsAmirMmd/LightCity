@@ -13,10 +13,10 @@ import java.util.Properties;
 import java.util.Scanner;
 
 public class City implements CityInterface {
-    private final ArrayList<Character> characters;
+    public static ArrayList<Character> characters;
+    public static ArrayList<Property> properties = Database.LoadProperties();
     private final Bank bankSystem;
     public static Municipality municipality;
-
     private final StockMarket stockMarket;
 
     private Character root;
@@ -27,7 +27,7 @@ public class City implements CityInterface {
 //        Get Bank Property from municipality
 //        bank has bought for one time
         Property bankPlace = null;
-        for (Property tempProperty : Database.LoadProperties()) {
+        for (Property tempProperty : properties) {
             if (tempProperty.getOwner() == root)
                 bankPlace = tempProperty;
         }
@@ -47,14 +47,14 @@ public class City implements CityInterface {
         }
         municipality = new Municipality();
         Property bankPlace = null;
-        for (Property tempProperty : Database.LoadProperties()) {
+        for (Property tempProperty : properties) {
             if (tempProperty.getOwner() == root)
                 bankPlace = tempProperty;
         }
         bankSystem = new Bank(bankPlace, root);
         stockMarket = new StockMarket();
         stockMarket.startMarketSimulation();
-
+        System.out.println("city");
         beginGame(temp);
     }
 
@@ -62,7 +62,7 @@ public class City implements CityInterface {
         characters = Database.loadCharacter();
         municipality = new Municipality();
         Property bankPlace = null;
-        for (Property tempProperty : Database.LoadProperties()) {
+        for (Property tempProperty : properties) {
             if (tempProperty.getOwner() == root)
                 bankPlace = tempProperty;
         }
@@ -91,6 +91,19 @@ public class City implements CityInterface {
      * Begin Game function generate a new thread for each character ,<b > DO NOT CHANGE THIS FUNCTION STRUCTURE</b> ,
      */
     public void beginGame(Character character) {
+//        using thread to save details for prevent from unsaved change due to system shutdown
+        Thread savingLife = new Thread(() -> {
+            while (true) {
+                Database.updateCharacter("life", character);
+                try {
+                    Thread.sleep(60000); // wait for 1 minute
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        savingLife.start();
         Thread thread = new Thread(() -> {
             try {
                 Scanner scanner = new Scanner(System.in);
@@ -136,7 +149,7 @@ public class City implements CityInterface {
         System.out.println("****         go to place           ****");
         System.out.println("***************************************");
         System.out.println("**********************");
-        municipality.showProperties(character, Database.LoadProperties());
+        municipality.showProperties(character, properties);
         System.out.println("Tip: if you want travel by coordinate write in this order :(divide it by comma) X,Y");
 
         Scanner MyPlace = new Scanner(System.in);
@@ -155,7 +168,7 @@ public class City implements CityInterface {
 
         Property location = null;
         boolean isWrongData = false;
-        for (Property property : Database.LoadProperties()) {
+        for (Property property : properties) {
             if (property.getIndustryTitle().equals(place)) {
                 location = property;
                 isWrongData = true;
@@ -305,7 +318,7 @@ public class City implements CityInterface {
     }
 
     public void Properties(Character character) {
-        Scanner scanner = new Scanner(System.in);     
+        Scanner scanner = new Scanner(System.in);
         System.out.println("****************************************");
         System.out.println("***    welcome to your properties    ***");
         System.out.println("****************************************");
@@ -338,9 +351,6 @@ public class City implements CityInterface {
     }
 
     public void Management(Character character) {
-        System.out.println(character.getUserInfo().getUsername());
-        System.out.println(character.getProperties());
-        System.out.println(character.getProperties().size());
         Scanner manage = new Scanner(System.in);
         System.out.println("*************************************************************");
         System.out.println("*** you can manage your requests and properties from here ***");
@@ -362,7 +372,7 @@ public class City implements CityInterface {
 
                 Property location = null;
                 boolean isWrongData = false;
-                for (Property property : Database.LoadProperties()) {
+                for (Property property : properties) {
                     if (String.valueOf(property.getId()).equals(place)) {
                         isWrongData = true;
                         location = property;
@@ -385,7 +395,7 @@ public class City implements CityInterface {
                 String place = MyPlace.nextLine();
                 Property location = null;
                 boolean isWrongData = false;
-                for (Property property : Database.LoadProperties()) {
+                for (Property property : properties) {
                     if (String.valueOf(property.getId()).equals(place)) {
                         isWrongData = true;
                         location = property;

@@ -75,7 +75,7 @@ public class Character implements CharacterInterface {
     public ArrayList<Property> getProperties() {
         ArrayList<Property> propertyList = new ArrayList<>();
 
-        for (Property property : Database.LoadProperties()) {
+        for (Property property : City.properties) {
             if (property.getOwner() != null && property.getOwner() == this)
                 propertyList.add(property);
         }
