@@ -23,7 +23,7 @@ public class Bank extends Industry implements BankInterface {
     }
 
     public BankAccount newAccount(String username,String password){
-        BankAccount bankAccount = new BankAccount(username,password,0,new Date());
+        BankAccount bankAccount = new BankAccount(username,password,10.0f,new Date());
         accounts.add(bankAccount);
         return bankAccount;
     }
