@@ -7,6 +7,7 @@ import org.example.defualtSystem.Municipality;
 import org.example.interfaces.CharacterInterface;
 
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Character implements CharacterInterface {
@@ -96,36 +97,41 @@ public class Character implements CharacterInterface {
         System.out.println("1. buy from mayor/players");
         System.out.println("2. to be hired");
         System.out.println("3. buy industry's products");
-        switch (PropertyScan.nextInt()) {
-            case 1 -> {
-                if (inTime.getOwner() == mayor && inTime.isForSale()) {
-                    System.out.println("you can buy this place from mayor");
-                    if (inTime.getPrice() <= this.getAccount().getMoney()) {
-                        System.out.println("if you want to buy this,");
-                        System.out.println("   1 - first look at your money :" + this.getAccount().getMoney() + "$");
-                        System.out.println("   2 - and the worth of property :" + inTime.getPrice() + "$");
-                        System.out.println("   3 - for confirm purchase enter[y/n]?");
-                        if (PropertyScan.nextLine().equals("y")) {
-                            City.municipality.buyProperty(new float[]{40, 40}, new float[]{inTime.getCoordinate()[0], inTime.getCoordinate()[1]}, this);
-                        } else {
-                            System.out.println("payment canceled!");
-                            positionProcessing();
+        try {
+            switch (PropertyScan.nextInt()) {
+                case 1 -> {
+                    if (inTime.getOwner() == mayor && inTime.isForSale()) {
+                        System.out.println("you can buy this place from mayor");
+                        if (inTime.getPrice() <= this.getAccount().getMoney()) {
+                            System.out.println("if you want to buy this,");
+                            System.out.println("   1 - first look at your money :" + this.getAccount().getMoney() + "$");
+                            System.out.println("   2 - and the worth of property :" + inTime.getPrice() + "$");
+                            System.out.println("   3 - for confirm purchase enter[y/n]?");
+                            if (PropertyScan.nextLine().equals("y")) {
+                                City.municipality.buyProperty(new float[]{40, 40}, new float[]{inTime.getCoordinate()[0], inTime.getCoordinate()[1]}, this);
+                            } else {
+                                System.out.println("payment canceled!");
+                                positionProcessing();
+                            }
                         }
-                    }
-                } else if (inTime.getOwner() != mayor && inTime.getOwner() != root && inTime.isForSale()) {
+                    } else if (inTime.getOwner() != mayor && inTime.getOwner() != root && inTime.isForSale()) {
 //                    send requests
+                    }
                 }
-            }
-            case 2 -> {
-                if (!inTime.getIndustryTitle().equals("not-industry")) {
+                case 2 -> {
+                    if (!inTime.getIndustryTitle().equals("not-industry")) {
 //                   add as employee
+                    }
                 }
-            }
-            case 3 -> {
-                if (!inTime.getIndustryTitle().equals("not-")) {
+                case 3 -> {
+                    if (!inTime.getIndustryTitle().equals("not-")) {
 //                   show its product
+                    }
                 }
             }
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input. Please enter a valid integer.");
+            positionProcessing();
         }
 
         Game.city.beginGame(this);
