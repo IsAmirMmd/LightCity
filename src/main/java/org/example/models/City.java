@@ -249,7 +249,23 @@ public class City implements CityInterface {
     }
 
     private void NotificationCenter(Character character) {
-        System.out.println("do sth");
+        Property requestPro = null;
+        String[] xANDy = {"", ""};
+        for (Request any : Database.loadRequests()) {
+            if (any.getOldOwner().equals(character.getUserInfo().getUsername())) {
+                System.out.println("from    : " + any.getNewOwner());
+                for (Property property : character.getProperties()) {
+                    xANDy[0] = any.getCoordinates().split(",")[0];
+                    xANDy[1] = any.getCoordinates().split(",")[1];
+                    if (Float.parseFloat(xANDy[0]) == property.getCoordinate()[0] && Float.parseFloat(xANDy[1]) == property.getCoordinate()[1]) {
+                        requestPro = property;
+                    }
+                }
+                System.out.println("for property in this location : [" + any.getCoordinates() + "]");
+                System.out.println("with price of " + requestPro.getPrice() + "$");
+                System.out.println("*********************");
+            }
+        }
     }
 
     public void My_Job(Character character) {

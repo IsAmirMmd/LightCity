@@ -572,5 +572,64 @@ public class Database {
         return false;
     }
 
+    public static void addRequset(Character oldOwner, Character newOwner, Property property) {
+        String insertQuery = "INSERT INTO `requset`(`oldowner`, `newowner`, `coordinate`, `price`) VALUES (?,?,?,?)";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement statement = connection.prepareStatement(insertQuery)) {
+
+            String old = oldOwner.getAccount().getOwner();
+            String newOne = newOwner.getAccount().getOwner();
+            String propertyLocation = property.getCoordinate()[0] + "," + property.getCoordinate()[1];
+            float price = property.getPrice();
+            statement.setString(1, old);
+            statement.setString(2, newOne);
+            statement.setString(3, propertyLocation);
+            statement.setFloat(4, price);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void removeRequest(Character oldOwner, Character newOwner, Property property) {
+        String deleteQuery = "DELETE FROM `requset` WHERE `oldowner` = ? AND `newowner` = ? AND `coordinate` = ?";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement statement = connection.prepareStatement(deleteQuery)) {
+
+            String old = oldOwner.getAccount().getOwner();
+            String newOne = newOwner.getAccount().getOwner();
+            String propertyLocation = property.getCoordinate()[0] + "," + property.getCoordinate()[1];
+            statement.setString(1, old);
+            statement.setString(2, newOne);
+            statement.setString(3, propertyLocation);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static ArrayList<Request> loadRequests() {
+        ArrayList<Request> requests = new ArrayList<>();
+        String selectQuery = "SELECT * FROM `requset`";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement statement = connection.prepareStatement(selectQuery);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            while (resultSet.next()) {
+                String oldOwner = resultSet.getString("oldowner");
+                String newOwner = resultSet.getString("newowner");
+                String coordinates = resultSet.getString("coordinate");
+                requests.add(new Request(oldOwner, newOwner,coordinates));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return requests;
+    }
+
 }
 
