@@ -65,7 +65,6 @@ public class Municipality implements MunicipalityInterface {
                 account.withdraw(owner, tempProperty.getPrice());
                 Database.updateCharacter("money", owner);
                 Database.BuyProperty(owner, tempProperty);
-
             }
         }
         return returnProperty;
@@ -73,11 +72,42 @@ public class Municipality implements MunicipalityInterface {
 
     @Override
     public void sellProperty(Property property) {
-
+        Character owner = property.getOwner();
+        account = owner.getAccount();
+        account.deposit(owner, property.getPrice());
     }
 
-    @Override
-    public void showProperties() {
+    public void tradeProperties(Character oldOwner, Character newOwner, Property property) {
+        System.out.println("you are here for trading this property");
+        System.out.println("W : " + property.getScales()[0] + ", H : " + property.getScales()[1]);
+        System.out.println("X : " + property.getCoordinate()[0] + ", Y : " + property.getCoordinate()[1]);
+        BankAccount OldOwner = oldOwner.getAccount();
+        BankAccount NewOwner = newOwner.getAccount();
 
+        NewOwner.withdraw(newOwner, property.getPrice());
+        OldOwner.deposit(oldOwner, property.getPrice());
+
+        oldOwner.getProperties().remove(property);
+        newOwner.setProperties(property);
+
+        Database.updateCharacter("money", newOwner);
+        Database.updateCharacter("money", oldOwner);
+
+        Database.BuyProperty(newOwner, property);
+    }
+
+
+    @Override
+    public void showProperties(Character character) {
+        for (Property property : Database.LoadProperties()) {
+            System.out.println("property id    : " + property.getId());
+            System.out.println("title          : " + property.getIndustryTitle());
+            System.out.println("coordinate     : [" + property.getCoordinate()[0] + "," + property.getCoordinate()[1] + "]");
+            System.out.print("for sale       : " + (property.isForSale() ? "yes" : "no"));
+            if (property.getOwner() == character) System.out.println("(you own)");
+            else System.out.println("");
+
+            System.out.println("********");
+        }
     }
 }
