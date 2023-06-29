@@ -94,12 +94,17 @@ public class City implements CityInterface {
         Thread thread = new Thread(() -> {
             try {
                 Scanner scanner = new Scanner(System.in);
-                System.out.println("       *** welcome to panel ***");
+                System.out.println("**************************************");
+                System.out.println("****       welcome to panel       ****");
                 System.out.println("**************************************");
                 System.out.println("*     go to place          [1]       *");
+                System.out.println("*====================================*");
                 System.out.println("*     process location     [2]       *");
+                System.out.println("*====================================*");
                 System.out.println("*     dashboard            [3]       *");
-                System.out.println("*     life detail          [4]       *");
+                System.out.println("*====================================*");
+                System.out.println("*     life                 [4]       *");
+                System.out.println("*====================================*");
                 System.out.println("*     exit                 [5]       *");
                 System.out.println("**************************************");
                 System.out.println("enter your command : ");
@@ -127,7 +132,9 @@ public class City implements CityInterface {
     }
 
     public void GoTo(Character character) {
-        System.out.println("enter location or id or industry title from below");
+        System.out.println("***************************************");
+        System.out.println("****         go to place           ****");
+        System.out.println("***************************************");
         System.out.println("**********************");
         municipality.showProperties(character, Database.LoadProperties());
         System.out.println("Tip: if you want travel by coordinate write in this order :(divide it by comma) X,Y");
@@ -173,12 +180,20 @@ public class City implements CityInterface {
 
     public void Process_location(Character character) {
         Scanner scanner1 = new Scanner(System.in);
-        System.out.println("showing where is character               [1]");
-        System.out.println("showing option according to industry     [2]");
+        System.out.println("****************************************************");
+        System.out.println("****             process location               ****");
+        System.out.println("****************************************************");
+        System.out.println("*   showing where is character               [1]   *");
+        System.out.println("*==================================================*");
+        System.out.println("*   showing option according to industry     [2]   *");
+        System.out.println("*==================================================*");
+        System.out.println("*   back                                     [3]   *");
+        System.out.println("****************************************************");
         System.out.println("enter your command:");
         switch (scanner1.next()) {
             case "1" -> Character_Location(character);
             case "2" -> Ownership_Detail(character);
+            case "3" -> beginGame(character);
         }
     }
 
@@ -194,9 +209,13 @@ public class City implements CityInterface {
             System.out.println("at the " + inLocation.getIndustryTitle());
         }
         Scanner loca = new Scanner(System.in);
-        System.out.println("what do you want to do now?");
-        System.out.println("showing option according to industry     [1]");
-        System.out.println("back to main menu                        [2]");
+        System.out.println("******************************************************");
+        System.out.println("*     what do you want to do now?                    *");
+        System.out.println("*????????????????????????????????????????????????????*");
+        System.out.println("*     showing option according to industry     [1]   *");
+        System.out.println("*====================================================*");
+        System.out.println("*     back to main menu                        [2]   *");
+        System.out.println("******************************************************");
         System.out.println("enter your command:");
         switch (loca.next()) {
             case "1" -> Ownership_Detail(character);
@@ -225,8 +244,11 @@ public class City implements CityInterface {
                 System.out.println("owner of this place is Mayor and his dear wife !");
         }
         Scanner owDeta = new Scanner(System.in);
-        System.out.println("what do you want to do now?");
-        System.out.println("back to main menu       [1]");
+        System.out.println("*****************************************");
+        System.out.println("*     what do you want to do now?       *");
+        System.out.println("*???????????????????????????????????????*");
+        System.out.println("*     back to main menu       [1]       *");
+        System.out.println("*****************************************");
         System.out.println("enter your command:");
         switch (owDeta.next()) {
             case "1" -> beginGame(character);
@@ -235,17 +257,26 @@ public class City implements CityInterface {
 
     public void Dashboard(Character character) {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("myjob             [1]");
-        System.out.println("properties        [2]");
-        System.out.println("economy           [3]");
-        System.out.println("notifications     [4]");
+        System.out.println("*************************************");
+        System.out.println("****          dashbord           ****");
+        System.out.println("*************************************");
+        System.out.println("*      myjob             [1]        *");
+        System.out.println("*===================================*");
+        System.out.println("*      properties        [2]        *");
+        System.out.println("*===================================*");
+        System.out.println("*      economy           [3]        *");
+        System.out.println("*===================================*");
+        System.out.println("*      notifications     [4]        *");
+        System.out.println("*===================================*");
+        System.out.println("*      back              [5]        *");
+        System.out.println("*************************************");
         System.out.println("enter your command:");
         switch (scanner.next()) {
             case "1" -> My_Job(character);
             case "2" -> Properties(character);
             case "3" -> Economy(character);
             case "4" -> NotificationCenter(character);
-
+            case "5" -> beginGame(character);
         }
     }
 
@@ -274,16 +305,27 @@ public class City implements CityInterface {
     }
 
     public void Properties(Character character) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("show properties         [1]");
-        System.out.println("sell                    [2]");
-        System.out.println("management              [3]");
-        System.out.println("found industry          [4]");
+        Scanner scanner = new Scanner(System.in);     
+        System.out.println("****************************************");
+        System.out.println("***    welcome to your properties    ***");
+        System.out.println("****************************************");
+        System.out.println("*    show properties         [1]       *");
+        System.out.println("*======================================*");
+        System.out.println("*    sell                    [2]       *");
+        System.out.println("*======================================*");
+        System.out.println("*    management              [3]       *");
+        System.out.println("*======================================*");
+        System.out.println("*    found industry          [4]       *");
+        System.out.println("*======================================*");
+        System.out.println("*    back                    [5]       *");
+        System.out.println("****************************************");
+        System.out.println("enter your command:");
         switch (scanner.next()) {
             case "1" -> Show_Properties(character);
             case "2" -> sell(character);
             case "3" -> Management(character);
             case "4" -> Found_Industry(character);
+            case "5" -> Dashboard(character);
         }
     }
 
@@ -300,11 +342,15 @@ public class City implements CityInterface {
         System.out.println(character.getProperties());
         System.out.println(character.getProperties().size());
         Scanner manage = new Scanner(System.in);
-        System.out.println("***********");
-        System.out.println("you can manage your requests and properties from here");
-        System.out.println("* make property ready for sell    [1]  *");
-        System.out.println("* set price for your property     [2]  *");
-        System.out.println("* back to menu                    [3]  *");
+        System.out.println("*************************************************************");
+        System.out.println("*** you can manage your requests and properties from here ***");
+        System.out.println("*************************************************************");
+        System.out.println("*          make property ready for sell    [1]              *");
+        System.out.println("*===========================================================*");
+        System.out.println("*          set price for your property     [2]              *");
+        System.out.println("*===========================================================*");
+        System.out.println("*          back to menu                    [3]              *");
+        System.out.println("*************************************************************");
         System.out.println("enter your command : ");
         switch (manage.nextInt()) {
             case 1 -> {
@@ -366,12 +412,20 @@ public class City implements CityInterface {
 
     public void Economy(Character character) {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("show incomes          [1]");
-        System.out.println("show job detail       [2]");
+        System.out.println("***************************************");
+        System.out.println("***     welcome to your economy     ***");
+        System.out.println("***************************************");
+        System.out.println("*      show incomes          [1]      *");
+        System.out.println("*=====================================*");
+        System.out.println("*      show job detail       [2]      *");
+        System.out.println("*=====================================*");
+        System.out.println("*      back                  [3]      *");
+        System.out.println("***************************************");
         System.out.println("enter your command:");
         switch (scanner.next()) {
             case "1" -> Show_Incomes(character);
             case "2" -> Show_Job_Detail(character);
+            case "3" -> Dashboard(character);
         }
     }
 
@@ -385,13 +439,23 @@ public class City implements CityInterface {
 
     public void Life(Character character) {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("life detail         [1]");
-        System.out.println("sleep option        [2]");
-        System.out.println("eat option          [3]");
+        System.out.println("*************************************");
+        System.out.println("****             life            ****");
+        System.out.println("*************************************");
+        System.out.println("*      life detail         [1]      *");
+        System.out.println("*===================================*");
+        System.out.println("*      sleep option        [2]      *");
+        System.out.println("*===================================*");
+        System.out.println("*      eat option          [3]      *");
+        System.out.println("*===================================*");
+        System.out.println("*      back                [4]      *");
+        System.out.println("*************************************");
+        System.out.println("enter your command:");
         switch (scanner.next()) {
             case "1" -> Life_Detail(character);
             case "2" -> Sleep(character);
             case "3" -> Eat(character);
+            case "4" -> beginGame(character);
         }
     }
 
