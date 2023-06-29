@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class Database {
 
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://localhost:3307/lightcity";
+    static final String DB_URL = "jdbc:mysql://localhost:3306/lightcity";
 
     // Database credentials
     static final String USER = "root";
@@ -428,6 +428,21 @@ public class Database {
             statement.setFloat(3, money);
             statement.setString(4, last);
             statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void updateBankAccount(String username, float newMoney) {
+        String updateQuery = "UPDATE `bank-account` SET `money`=? WHERE `username`=?";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement statement = connection.prepareStatement(updateQuery)) {
+
+            statement.setFloat(1, newMoney);
+            statement.setString(2, username);
+            statement.executeUpdate();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
