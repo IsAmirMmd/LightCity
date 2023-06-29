@@ -1,5 +1,6 @@
 package org.example.models;
 
+import org.example.Database;
 import org.example.defualtSystem.Bank;
 
 import java.util.Date;
@@ -48,23 +49,26 @@ public class BankAccount {
         this.lastChange = lastChange;
     }
 
-    public boolean withdraw(Character character,float amount){
-        if(character.getUserInfo().getUsername().equals(owner)){
-            if(amount <= money){
-                Bank.turnover.transfer(amount,-1);
-                money-= amount;
+    public boolean withdraw(Character character, float amount) {
+        if (character.getUserInfo().getUsername().equals(owner)) {
+            if (amount <= money) {
+                Bank.turnover.transfer(amount, -1);
+                money -= amount;
+                Database.updateBankAccount(character.getUserInfo().getUsername(), money);
                 return true;
-            }else
+            } else
                 return false;
         }
         return false;
     }
-    public boolean deposit(Character character,float amount){
-        if(amount >0){
-            String log = String.format("User : %s deposit %f \n",character.getUserInfo().getUsername(),amount);
-            logs+=log;
-            Bank.turnover.transfer(amount,1);
+
+    public boolean deposit(Character character, float amount) {
+        if (amount > 0) {
+            String log = String.format("User : %s deposit %f \n", character.getUserInfo().getUsername(), amount);
+            logs += log;
+            Bank.turnover.transfer(amount, 1);
             money += amount;
+            Database.updateBankAccount(character.getUserInfo().getUsername(), money);
             return true;
         }
         return false;
