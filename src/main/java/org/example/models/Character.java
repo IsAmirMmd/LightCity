@@ -9,6 +9,7 @@ import org.example.interfaces.CharacterInterface;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Character implements CharacterInterface {
     private User userInfo;
@@ -16,7 +17,7 @@ public class Character implements CharacterInterface {
     private Life life;
 
     private Job job;
-    private ArrayList<Property> properties;
+    private ArrayList<Property> properties = new ArrayList<>();
 
     private Property inPosition;
     Character root;
@@ -72,11 +73,17 @@ public class Character implements CharacterInterface {
     }
 
     public ArrayList<Property> getProperties() {
-        return properties;
+        ArrayList<Property> propertyList = new ArrayList<>();
+
+        for (Property property : Database.LoadProperties()) {
+            if (property.getOwner() != null && property.getOwner() == this)
+                propertyList.add(property);
+        }
+        return propertyList;
     }
 
     public void setProperties(Property property) {
-        this.properties.add(property);
+        properties.add(property);
     }
 
     public Property getInPosition() {
