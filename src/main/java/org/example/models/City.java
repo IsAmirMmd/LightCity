@@ -128,16 +128,7 @@ public class City implements CityInterface {
     public void GoTo(Character character) {
         System.out.println("enter location or id or industry title from below");
         System.out.println("**********************");
-        for (Property property : Database.LoadProperties()) {
-            System.out.println("property id    : " + property.getId());
-            System.out.println("title          : " + property.getIndustryTitle());
-            System.out.println("coordinate     : [" + property.getCoordinate()[0] + "," + property.getCoordinate()[1] + "]");
-            System.out.print("for sale       : " + (property.isForSale() ? "yes" : "no"));
-            if (property.getOwner() == character) System.out.println("(you own)");
-            else System.out.println("");
-
-            System.out.println("********");
-        }
+        municipality.showProperties(character);
         System.out.println("Tip: if you want travel by coordinate write in this order :(divide it by comma) X,Y");
 
         Scanner MyPlace = new Scanner(System.in);

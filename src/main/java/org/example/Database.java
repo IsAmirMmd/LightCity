@@ -306,7 +306,22 @@ public class Database {
         }
     }
 
-    public static void readyToSale(Character owner, Property tempProperty, float price) {
+    public static void sellProperty(Property property, Character newOwner) {
+        String sql = "UPDATE properties SET owner=? WHERE id=?";
+        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, newOwner.getUserInfo().getUsername());
+            statement.setInt(2, property.getId());
+
+            statement.executeUpdate();
+            statement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void readyToSell(Character owner, Property tempProperty, float price) {
         String sql = "UPDATE properties SET ForSale=? ,price=? WHERE id=?";
         try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -358,7 +373,6 @@ public class Database {
             e.printStackTrace();
         }
     }
-
 
 
     public static void updateCharacter(String status, Character character) {
