@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class Database {
 
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://localhost:3306/lightcity";
+    static final String DB_URL = "jdbc:mysql://localhost:3307/lightcity";
 
     // Database credentials
     static final String USER = "root";
@@ -28,6 +28,8 @@ public class Database {
     private Connection conn;
 
     public static ArrayList<Character> characters = new ArrayList<>();
+
+    public static Character root = new Character(new User("root", "1234"), new BankAccount("root", "1234", 100, null), null, null, null, null);
 
 
     public Database() {
@@ -61,7 +63,44 @@ public class Database {
 
     }
 
+    public static void saveCharacter(Character character) {
+        String insertQuery = "INSERT INTO `characters`(`username`, `password`, `money`, `life`, `job`, `location`) VALUES (?,?,?,?,?,?)";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement statement = connection.prepareStatement(insertQuery)) {
+
+            String username = character.getUserInfo().getUsername();
+            String password = character.getUserInfo().getPassword();
+            String life = character.getLife().getFood() + "," + character.getLife().getSleep() + "," + character.getLife().getWater();
+            String jobTitle = "";
+            if (character.getJob() == null) {
+                jobTitle = "null";
+            } else {
+                jobTitle = character.getJob().getTitle();
+            }
+            String inLocation = " ";
+
+            if (character.getInPosition() == null) {
+                inLocation = "null";
+            } else {
+                inLocation = character.getInPosition().getCoordinate()[0] + "," + character.getInPosition().getCoordinate()[1];
+            }
+
+            statement.setString(1, username);
+            statement.setString(2, password);
+            statement.setFloat(3, character.getAccount().getMoney());
+            statement.setString(4, life);
+            statement.setString(5, jobTitle);
+            statement.setString(6, inLocation);
+
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static ArrayList<Character> loadCharacter() {
+        ArrayList<Property> ownPro = new ArrayList<>();
 
         try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS); Statement statement = connection.createStatement()) {
 
@@ -73,7 +112,7 @@ public class Database {
 
                 String username = rs.getString("username");
                 String pass = rs.getString("password");
-                int money = rs.getInt("money");
+                float money = rs.getFloat("money");
                 String life = rs.getString("life");
                 String job = rs.getString("job");
                 String location = rs.getString("location");
@@ -88,13 +127,12 @@ public class Database {
                     }
                 }
 //                property arraylist ...
-                ArrayList<Property> ownPro = new ArrayList<>();
-                for (Property temp : LoadProperties()) {
-                    if (temp.getOwner() != null)
-                        if (temp.getOwner().getUserInfo().getUsername().equals(username)) {
-                            ownPro.add(temp);
-                        }
-                }
+//                for (Property temp : LoadProperties()) {
+//                    if (temp.getOwner() != null)
+//                        if (temp.getOwner().getUserInfo().getUsername().equals(username)) {
+//                            ownPro.add(temp);
+//                        }
+//                }
 //                life details
                 String[] Sep_life = life.split(",");
                 float food = Float.parseFloat(Sep_life[0]);
@@ -142,7 +180,7 @@ public class Database {
 
     public static User loginGame(User user) {
         try {
-            if (!isValid(user)) {
+            if (!isValidForLogin(user)) {
                 return user;
             } else {
                 System.out.println("we don't have user with these details!");
@@ -186,8 +224,7 @@ public class Database {
     }
 
     public static ArrayList<Property> LoadProperties() {
-        Character root = null;
-        Character mayor = null;
+
         ArrayList<Property> properties = new ArrayList<>();
 
         try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS); Statement statement = connection.createStatement()) {
@@ -208,25 +245,30 @@ public class Database {
                 float price = rs.getFloat("price");
                 String industryTitle = rs.getString("indtitle");
 
-                Property tempProperty = null;
+                Property tempProperty = new Property(new float[]{width, height}, new float[]{xCoordinate, yCoordinate}, null);
+
                 Character ownerPro = null;
                 if (owner.equals("root")) {
-                    tempProperty = new Property(new float[]{width, height}, new float[]{xCoordinate, yCoordinate}, root);
-                } else if (owner.equals("mayor")) {
-                    tempProperty = new Property(new float[]{width, height}, new float[]{xCoordinate, yCoordinate}, mayor);
+                    tempProperty.setOwner(root);
+                    root.setProperties(tempProperty);
+                    tempProperty.setId(id);
+                    tempProperty.setForSale(iSForSale);
+                    tempProperty.setPrice(price);
+                    tempProperty.setIndustryTitle(industryTitle);
                 } else {
                     for (Character temp : characters) {
-                        if (temp.getUserInfo().getUsername().equals(owner)) {
-                            ownerPro = temp;
-                            break;
+                        if (temp.getAccount().getOwner().equals(owner)) {
+                            tempProperty.setOwner(temp);
+                            temp.setProperties(tempProperty);
+                            tempProperty.setId(id);
+                            tempProperty.setForSale(iSForSale);
+                            tempProperty.setPrice(price);
+                            tempProperty.setIndustryTitle(industryTitle);
                         }
                     }
-                    tempProperty = new Property(new float[]{width, height}, new float[]{xCoordinate, yCoordinate}, ownerPro);
+
                 }
-                tempProperty.setId(id);
-                tempProperty.setForSale(iSForSale);
-                tempProperty.setPrice(price);
-                tempProperty.setIndustryTitle(industryTitle);
+
                 properties.add(tempProperty);
             }
             rs.close();
@@ -242,6 +284,27 @@ public class Database {
             String sql = "SELECT * FROM users WHERE username = ?";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, user.getUsername());
+
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return false;
+
+            } else {
+                return true;
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        return false;
+    }
+
+    public static boolean isValidForLogin(User user) {
+        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS)) {
+            String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, user.getUsername());
+            statement.setString(2, user.getPassword());
 
             ResultSet rs = statement.executeQuery();
 
@@ -332,43 +395,6 @@ public class Database {
 
             statement.executeUpdate();
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    public static void saveCharacter(Character character) {
-        String insertQuery = "INSERT INTO `characters`(`username`, `password`, `money`, `life`, `job`, `location`) VALUES (?,?,?,?,?,?)";
-
-        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
-             PreparedStatement statement = connection.prepareStatement(insertQuery)) {
-
-            String username = character.getUserInfo().getUsername();
-            String password = character.getUserInfo().getPassword();
-            String life = character.getLife().getFood() + "," + character.getLife().getSleep() + "," + character.getLife().getWater();
-            String jobTitle = "";
-            if (character.getJob() == null) {
-                jobTitle = "null";
-            } else {
-                jobTitle = character.getJob().getTitle();
-            }
-            String inLocation = " ";
-
-            if (character.getInPosition() == null) {
-                inLocation = "null";
-            } else {
-                inLocation = character.getInPosition().getCoordinate()[0] + "," + character.getInPosition().getCoordinate()[1];
-            }
-
-            statement.setString(1, username);
-            statement.setString(2, password);
-            statement.setFloat(3, 0);
-            statement.setString(4, life);
-            statement.setString(5, jobTitle);
-            statement.setString(6, inLocation);
-
-            statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -592,15 +618,15 @@ public class Database {
         }
     }
 
-    public static void removeRequest(Character oldOwner, Character newOwner, Property property) {
+    public static void removeRequest(Request request) {
         String deleteQuery = "DELETE FROM `requset` WHERE `oldowner` = ? AND `newowner` = ? AND `coordinate` = ?";
 
         try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
              PreparedStatement statement = connection.prepareStatement(deleteQuery)) {
 
-            String old = oldOwner.getAccount().getOwner();
-            String newOne = newOwner.getAccount().getOwner();
-            String propertyLocation = property.getCoordinate()[0] + "," + property.getCoordinate()[1];
+            String old = request.getOldOwner();
+            String newOne = request.getNewOwner();
+            String propertyLocation = request.getCoordinates();
             statement.setString(1, old);
             statement.setString(2, newOne);
             statement.setString(3, propertyLocation);
@@ -619,10 +645,13 @@ public class Database {
              ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
+                int id = resultSet.getInt("id");
                 String oldOwner = resultSet.getString("oldowner");
                 String newOwner = resultSet.getString("newowner");
                 String coordinates = resultSet.getString("coordinate");
-                requests.add(new Request(oldOwner, newOwner,coordinates));
+                Request request = new Request(oldOwner, newOwner, coordinates);
+                request.setId(id);
+                requests.add(request);
             }
         } catch (SQLException e) {
             e.printStackTrace();

@@ -1,5 +1,6 @@
 package org.example.models;
 
+import com.mysql.cj.jdbc.jmx.LoadBalanceConnectionGroupManager;
 import org.example.Database;
 import org.example.Game;
 import org.example.defualtSystem.Life;
@@ -30,7 +31,7 @@ public class Character implements CharacterInterface {
         this.account = account;
         this.life = life;
         this.job = job;
-        this.properties = properties;
+        this.properties = new ArrayList<>();
         this.inPosition = inPosition;
     }
 
@@ -73,13 +74,20 @@ public class Character implements CharacterInterface {
     }
 
     public ArrayList<Property> getProperties() {
-        ArrayList<Property> propertyList = new ArrayList<>();
+//        clear first
+        ArrayList<Property> propertyArrayList = new ArrayList<>();
+        setProperties(propertyArrayList);
 
         for (Property property : Database.LoadProperties()) {
-            if (property.getOwner() != null && property.getOwner() == this)
-                propertyList.add(property);
+            if (property.getOwner() == this)
+                properties.add(property);
         }
-        return propertyList;
+
+        return properties;
+    }
+
+    public void setProperties(ArrayList<Property> properties) {
+        this.properties = properties;
     }
 
     public void setProperties(Property property) {
@@ -104,7 +112,9 @@ public class Character implements CharacterInterface {
         System.out.println("1. buy from mayor/players");
         System.out.println("2. to be hired");
         System.out.println("3. buy industry's products");
+
         try {
+            Scanner test = new Scanner(System.in);
             switch (PropertyScan.nextInt()) {
                 case 1 -> {
                     if (inTime.getOwner() == mayor && inTime.isForSale()) {
@@ -114,7 +124,8 @@ public class Character implements CharacterInterface {
                             System.out.println("   1 - first look at your money :" + this.getAccount().getMoney() + "$");
                             System.out.println("   2 - and the worth of property :" + inTime.getPrice() + "$");
                             System.out.println("   3 - for confirm purchase enter[y/n]?");
-                            if (PropertyScan.nextLine().equals("y")) {
+                            if (test.nextLine().equals("y")) {
+                                System.out.println("you bought this property successfully!");
                                 City.municipality.buyProperty(new float[]{40, 40}, new float[]{inTime.getCoordinate()[0], inTime.getCoordinate()[1]}, this);
                             } else {
                                 System.out.println("payment canceled!");
@@ -123,17 +134,43 @@ public class Character implements CharacterInterface {
                         }
                     } else if (inTime.getOwner() != mayor && inTime.getOwner() != root && inTime.isForSale()) {
 //                        it sends request to property's owner and he/she can check from notification bar
-                        Database.addRequset(inTime.getOwner(), this, inTime);
+                        System.out.println("if you want to send request for this,");
+                        System.out.println("   1 - first look at your money :" + this.getAccount().getMoney() + "$");
+                        System.out.println("   2 - and the worth of property :" + inTime.getPrice() + "$");
+                        System.out.println("   3 - for confirm request enter[y/n]?");
+                        if (test.nextLine().equals("y")) {
+                            if (inTime.getPrice() <= this.getAccount().getMoney()) {
+                                Database.addRequset(inTime.getOwner(), this, inTime);
+                                System.out.println("your request will be answered soon as the owner read it!");
+                            } else {
+                                System.out.println("you don't have enough money!");
+                                positionProcessing();
+                            }
+                        } else {
+                            System.out.println("payment canceled!");
+                            positionProcessing();
+                        }
                     }
                 }
                 case 2 -> {
                     if (!inTime.getIndustryTitle().equals("not-industry")) {
 //                   add as employee
+                        System.out.println("if you want to be hired in this industry,pay attention to below");
+                        System.out.println("monthly salary is : " + "price" + "$");
+                        System.out.println("are you sure?[y/n]");
+                        if (PropertyScan.nextLine().equals("y")) {
+//                            if it has a space for emp -> accept
+                        } else {
+                            System.out.println("no - for some reason");
+                            positionProcessing();
+                        }
                     }
                 }
                 case 3 -> {
-                    if (!inTime.getIndustryTitle().equals("not-")) {
-//                   show its product
+                    if (inTime.getIndustryTitle().equals("not-industry")) {
+                        System.out.println("well!");
+//                        this industry has products such as food,liquid,...
+//                        and it will show a menu of this property
                     }
                 }
             }
