@@ -41,6 +41,14 @@ public class Employee {
         this.level = level;
     }
 
+    public Industry getIndustry() {
+        return industry;
+    }
+
+    public void setIndustry(Industry industry) {
+        this.industry = industry;
+    }
+
     public void paySalary(){
         bankAccount.deposit(industry.getOwner(),level*baseSalary);
     }
