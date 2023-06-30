@@ -1,6 +1,7 @@
 package org.example.models;
 
 public class Request {
+    private int id = 0;
     private String oldOwner = " ";
     private String newOwner = " ";
     private String coordinates = " ";
@@ -9,6 +10,7 @@ public class Request {
         this.oldOwner = oldOwner;
         this.newOwner = newOwner;
         this.coordinates = coordinates;
+        this.id = 0;
     }
 
     public String getOldOwner() {
@@ -33,5 +35,13 @@ public class Request {
 
     public void setCoordinates(String coordinates) {
         this.coordinates = coordinates;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

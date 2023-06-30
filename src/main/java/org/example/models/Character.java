@@ -74,14 +74,20 @@ public class Character implements CharacterInterface {
     }
 
     public ArrayList<Property> getProperties() {
-//        ArrayList<Property> propertyList = new ArrayList<>();
-//
-//        for (Property property : Database.LoadProperties()) {
-//            System.out.println(property.getOwner().getUserInfo().getUsername());
-//            if (property.getOwner() == this)
-//                propertyList.add(property);
-//        }
+//        clear first
+        ArrayList<Property> propertyArrayList = new ArrayList<>();
+        setProperties(propertyArrayList);
+
+        for (Property property : Database.LoadProperties()) {
+            if (property.getOwner() == this)
+                properties.add(property);
+        }
+
         return properties;
+    }
+
+    public void setProperties(ArrayList<Property> properties) {
+        this.properties = properties;
     }
 
     public void setProperties(Property property) {

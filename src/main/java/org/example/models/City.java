@@ -108,7 +108,7 @@ public class City implements CityInterface {
             while (true) {
                 Database.updateCharacter("life", character);
                 try {
-                    Thread.sleep(60000); // wait for 1 minute
+                    Thread.sleep(60000 * 2); // save each 2 minute
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -169,7 +169,6 @@ public class City implements CityInterface {
         float locationX = 0.0f, locationY = 0.0f;
         System.out.println(place);
         if (place.contains(",")) {
-            System.out.println("contain ,");
             String[] placeXY = place.split(",");
             placeX = placeXY[0];
             placeY = placeXY[1];
@@ -310,21 +309,30 @@ public class City implements CityInterface {
         String[] xANDy = {"", ""};
         for (Request any : Database.loadRequests()) {
             if (any.getOldOwner().equals(character.getUserInfo().getUsername())) {
-                System.out.println("from    : " + any.getNewOwner());
+                System.out.println("request ID    : " + any.getId());
+                System.out.println("from          : " + any.getNewOwner());
                 for (Property property : character.getProperties()) {
                     xANDy[0] = any.getCoordinates().split(",")[0];
                     xANDy[1] = any.getCoordinates().split(",")[1];
-                    System.out.println(xANDy[0]+","+xANDy[1]);
                     if (Float.parseFloat(xANDy[0]) == property.getCoordinate()[0] && Float.parseFloat(xANDy[1]) == property.getCoordinate()[1]) {
                         requestPro = property;
                     }
                 }
                 System.out.println("for property in this location : [" + any.getCoordinates() + "]");
-                System.out.println("with price of " + requestPro.getPrice() + "$");
+                System.out.println("with price of : " + requestPro.getPrice() + "$");
                 System.out.println("*********************");
             }
         }
+
+        System.out.println("*   back to dashboard     [1]  *");
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("*************************************");
+        System.out.println("enter your command:");
+        switch (scanner.next()) {
+            case "1" -> Dashboard(character);
+        }
     }
+
 
     public void My_Job(Character character) {
         System.out.println("do something");
@@ -337,30 +345,72 @@ public class City implements CityInterface {
         System.out.println("****************************************");
         System.out.println("*    show properties         [1]       *");
         System.out.println("*======================================*");
-        System.out.println("*    sell                    [2]       *");
+        System.out.println("*    management              [2]       *");
         System.out.println("*======================================*");
-        System.out.println("*    management              [3]       *");
+        System.out.println("*    found industry          [3]       *");
         System.out.println("*======================================*");
-        System.out.println("*    found industry          [4]       *");
-        System.out.println("*======================================*");
-        System.out.println("*    back                    [5]       *");
+        System.out.println("*    back                    [4]       *");
         System.out.println("****************************************");
         System.out.println("enter your command:");
         switch (scanner.next()) {
             case "1" -> Show_Properties(character);
-            case "2" -> sell(character);
-            case "3" -> Management(character);
-            case "4" -> Found_Industry(character);
-            case "5" -> Dashboard(character);
+            case "2" -> Management(character);
+            case "3" -> Found_Industry(character);
+            case "4" -> Dashboard(character);
         }
     }
 
     public void Show_Properties(Character character) {
-        System.out.println("do something");
+        System.out.println("you can check all of your property from here!");
+        System.out.println("*****************");
+        municipality.showProperties(character, character.getProperties());
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("here is all of your property ...");
+        System.out.println("****************************************");
+        System.out.println("*    management              [1]       *");
+        System.out.println("*======================================*");
+        System.out.println("*    found industry          [2]       *");
+        System.out.println("*======================================*");
+        System.out.println("*    back                    [3]       *");
+        System.out.println("****************************************");
+        System.out.println("enter your command:");
+        switch (scanner.next()) {
+            case "1" -> Management(character);
+            case "2" -> Found_Industry(character);
+            case "3" -> Properties(character);
+        }
     }
 
-    public void sell(Character character) {
-        System.out.println("do something");
+    public void sell(Character character, Request request) {
+        Property requestForSell = null;
+        String newOwnerUserName = "";
+        String[] xANDy = {"", ""};
+        for (Request any : Database.loadRequests()) {
+            if (any.getOldOwner().equals(character.getUserInfo().getUsername())) {
+                for (Property property : character.getProperties()) {
+                    xANDy[0] = any.getCoordinates().split(",")[0];
+                    xANDy[1] = any.getCoordinates().split(",")[1];
+                    if (Float.parseFloat(xANDy[0]) == property.getCoordinate()[0] && Float.parseFloat(xANDy[1]) == property.getCoordinate()[1]) {
+                        requestForSell = property;
+                    }
+                }
+                newOwnerUserName = any.getNewOwner();
+            }
+        }
+        Character ewOwner = null;
+        for (Character character1 : Database.loadCharacter()) {
+            if (character1.getUserInfo().getUsername().equals(newOwnerUserName)) {
+                ewOwner = character1;
+            }
+        }
+        System.out.println("are you sure?[y/n]");
+        Scanner sell = new Scanner(System.in);
+        if (sell.nextLine().equals("y")) {
+            Database.removeRequest(request);
+            municipality.tradeProperties(character, ewOwner, requestForSell);
+        } else {
+            Management(character);
+        }
     }
 
     public void Management(Character character) {
@@ -372,7 +422,9 @@ public class City implements CityInterface {
         System.out.println("*===========================================================*");
         System.out.println("*          set price for your property     [2]              *");
         System.out.println("*===========================================================*");
-        System.out.println("*          back to menu                    [3]              *");
+        System.out.println("*          manage request for property     [3]              *");
+        System.out.println("*===========================================================*");
+        System.out.println("*          back to menu                    [4]              *");
         System.out.println("*************************************************************");
         System.out.println("enter your command : ");
         switch (manage.nextInt()) {
@@ -425,7 +477,43 @@ public class City implements CityInterface {
                 System.out.println("you make this property ready to sell for " + price + "$ !");
                 Management(character);
             }
-            case 3 -> Properties(character);
+            case 3 -> manageRequest(character);
+            case 4 -> Properties(character);
+        }
+    }
+
+    public void manageRequest(Character character) {
+        Property requestForSell = null;
+        String[] xANDy = {"", ""};
+        for (Request any : Database.loadRequests()) {
+            if (any.getOldOwner().equals(character.getUserInfo().getUsername())) {
+                System.out.println("request ID    : " + any.getId());
+                System.out.println("from          : " + any.getNewOwner());
+                for (Property property : character.getProperties()) {
+                    xANDy[0] = any.getCoordinates().split(",")[0];
+                    xANDy[1] = any.getCoordinates().split(",")[1];
+                    if (Float.parseFloat(xANDy[0]) == property.getCoordinate()[0] && Float.parseFloat(xANDy[1]) == property.getCoordinate()[1]) {
+                        requestForSell = property;
+                    }
+                }
+                System.out.println("for property in this location : [" + any.getCoordinates() + "]");
+                System.out.println("with price of : " + requestForSell.getPrice() + "$");
+                System.out.println("*********************");
+            }
+        }
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("if you want to accept any request please enter id");
+        int reqID = scanner.nextInt();
+        for (Request request : Database.loadRequests()) {
+            if (request.getId() == reqID) {
+                sell(character, request);
+            }
+        }
+        System.out.println("*   back     [0]  *");
+        System.out.println("*************************************");
+        System.out.println("enter your command:");
+        switch (scanner.nextInt()) {
+            case 0 -> Management(character);
         }
     }
 

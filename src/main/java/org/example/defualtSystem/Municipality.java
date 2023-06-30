@@ -29,8 +29,6 @@ public class Municipality implements MunicipalityInterface {
 
 //        we need it for just one time for creating city's buildings
 //        generateForOnce();
-
-        characters.size();
     }
 
     private void generateForOnce() {
@@ -95,7 +93,7 @@ public class Municipality implements MunicipalityInterface {
 
         Database.updateCharacter("money", newOwner);
         Database.updateCharacter("money", oldOwner);
-
+        System.out.println("Nice Deal !");
         Database.BuyProperty(newOwner, property);
     }
 
@@ -108,7 +106,7 @@ public class Municipality implements MunicipalityInterface {
             System.out.println("coordinate     : [" + property.getCoordinate()[0] + "," + property.getCoordinate()[1] + "]");
             System.out.println("owner          : " + property.getOwner().getUserInfo().getUsername());
             System.out.print("for sale       : " + (property.isForSale() ? "yes" : "no"));
-            if (property.getOwner() == character) System.out.println("(you own)");
+            if (property.getOwner().equals(character)) System.out.println("(you own)");
             else System.out.println("");
 
             System.out.println("********");

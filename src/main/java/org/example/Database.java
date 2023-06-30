@@ -100,7 +100,7 @@ public class Database {
     }
 
     public static ArrayList<Character> loadCharacter() {
-                ArrayList<Property> ownPro = new ArrayList<>();
+        ArrayList<Property> ownPro = new ArrayList<>();
 
         try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS); Statement statement = connection.createStatement()) {
 
@@ -618,15 +618,15 @@ public class Database {
         }
     }
 
-    public static void removeRequest(Character oldOwner, Character newOwner, Property property) {
+    public static void removeRequest(Request request) {
         String deleteQuery = "DELETE FROM `requset` WHERE `oldowner` = ? AND `newowner` = ? AND `coordinate` = ?";
 
         try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
              PreparedStatement statement = connection.prepareStatement(deleteQuery)) {
 
-            String old = oldOwner.getAccount().getOwner();
-            String newOne = newOwner.getAccount().getOwner();
-            String propertyLocation = property.getCoordinate()[0] + "," + property.getCoordinate()[1];
+            String old = request.getOldOwner();
+            String newOne = request.getNewOwner();
+            String propertyLocation = request.getCoordinates();
             statement.setString(1, old);
             statement.setString(2, newOne);
             statement.setString(3, propertyLocation);
@@ -645,10 +645,13 @@ public class Database {
              ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
+                int id = resultSet.getInt("id");
                 String oldOwner = resultSet.getString("oldowner");
                 String newOwner = resultSet.getString("newowner");
                 String coordinates = resultSet.getString("coordinate");
-                requests.add(new Request(oldOwner, newOwner, coordinates));
+                Request request = new Request(oldOwner, newOwner, coordinates);
+                request.setId(id);
+                requests.add(request);
             }
         } catch (SQLException e) {
             e.printStackTrace();
