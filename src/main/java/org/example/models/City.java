@@ -102,8 +102,8 @@ public class City implements CityInterface {
                 }
             }
         });
-
         savingLife.start();
+
         Thread thread = new Thread(() -> {
             try {
                 Scanner scanner = new Scanner(System.in);
@@ -148,7 +148,6 @@ public class City implements CityInterface {
         System.out.println("***************************************");
         System.out.println("****         go to place           ****");
         System.out.println("***************************************");
-        System.out.println("**********************");
         municipality.showProperties(character, properties);
         System.out.println("Tip: if you want travel by coordinate write in this order :(divide it by comma) X,Y");
 
@@ -271,9 +270,9 @@ public class City implements CityInterface {
     public void Dashboard(Character character) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("*************************************");
-        System.out.println("****          dashbord           ****");
+        System.out.println("****          dashboard          ****");
         System.out.println("*************************************");
-        System.out.println("*      myjob             [1]        *");
+        System.out.println("*      my job status     [1]        *");
         System.out.println("*===================================*");
         System.out.println("*      properties        [2]        *");
         System.out.println("*===================================*");
@@ -470,15 +469,76 @@ public class City implements CityInterface {
     }
 
     public void Life_Detail(Character character) {
-        System.out.println("do something");
+        Scanner lifeDetails = new Scanner(System.in);
+        System.out.println("*  you can manage and check your life status :  *");
+        System.out.println("*  food  : " + character.getLife().getFood() + "  *");
+        System.out.println("*  water : " + character.getLife().getWater() + "  *");
+        System.out.println("*  sleep : " + character.getLife().getSleep() + "  *");
+        System.out.println("*************");
+        System.out.println("*  take a nap              [1] *");
+        System.out.println("*  eat or drink            [2] *");
+        System.out.println("*  back                    [3] *");
+        System.out.println("enter your command:");
+        switch (lifeDetails.next()) {
+            case "1" -> Sleep(character);
+            case "2" -> Eat(character);
+            case "3" -> Life(character);
+        }
     }
 
     public void Sleep(Character character) {
-        System.out.println("do something");
+        Scanner sleep = new Scanner(System.in);
+        System.out.println("* we have some plan for you *");
+        System.out.println("* sleep : " + character.getLife().getSleep() + "  *");
+        System.out.println("* +10 for 1$           [1]  *");
+        System.out.println("* +20 for 2$           [2]  *");
+        System.out.println("* +30 for 2.5$         [3]  *");
+        System.out.println("* cancel and back      [4]  *");
+        System.out.println("enter your command:");
+        switch (sleep.next()) {
+            case "1" -> sleepCharge(character, 10, 1);
+            case "2" -> sleepCharge(character, 20, 2);
+            case "3" -> sleepCharge(character, 30, 2.5f);
+            case "4" -> Life_Detail(character);
+        }
+        System.out.println("************");
+        System.out.println("what do you want?");
+        System.out.println("*  charge again     [1]  *");
+        System.out.println("*  back             [2]  *");
+        switch (sleep.next()) {
+            case "1" -> Sleep(character);
+            case "2" -> Life_Detail(character);
+        }
+    }
+
+    private void sleepCharge(Character character, float moreSleep, float price) {
+        BankAccount account = character.getAccount();
+        account.withdraw(character, price);
+
+        float lastSleep = character.getLife().getSleep();
+        float nowSleep = lastSleep + moreSleep;
+        if (nowSleep >= 100) {
+            nowSleep = 100.0f;
+        }
+
+        Life temp = character.getLife();
+        temp.setSleep(nowSleep);
+
+        Database.updateCharacter("life", character);
+
+        System.out.println("your new sleep status is :" + temp.getSleep());
     }
 
     public void Eat(Character character) {
-        System.out.println("do something");
+        Scanner foodScan = new Scanner(System.in);
+        System.out.println("you can consume product to gain water or food");
+        System.out.println("* travel and shop          [1] *");
+        System.out.println("* cancel and back          [2] *");
+
+        switch (foodScan.next()) {
+            case "1" -> GoTo(character);
+            case "2" -> Life_Detail(character);
+        }
     }
 
     public void Exit() {

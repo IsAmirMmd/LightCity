@@ -16,7 +16,7 @@ public class BankAccount {
     public BankAccount(String owner, String password, float money, Date lastChange) {
         this.owner = owner;
         this.password = password;
-        this.money = money;
+        this.money = 10;
         this.lastChange = lastChange;
     }
 

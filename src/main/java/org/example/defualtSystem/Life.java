@@ -90,4 +90,16 @@ public class Life {
             System.out.println("Not enough sleep!");
         }
     }
+
+    public void setFood(float food) {
+        this.food = food;
+    }
+
+    public void setWater(float water) {
+        this.water = water;
+    }
+
+    public void setSleep(float sleep) {
+        this.sleep = sleep;
+    }
 }
