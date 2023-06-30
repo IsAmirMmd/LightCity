@@ -19,7 +19,7 @@ public class City implements CityInterface {
     public static Municipality municipality;
     private final StockMarket stockMarket;
 
-    private Character root;
+    private Character root = Database.root;
 
     public City() {
         characters = new ArrayList<>();
@@ -29,7 +29,11 @@ public class City implements CityInterface {
         Property bankPlace = null;
         for (Property tempProperty : properties) {
             if (tempProperty.getOwner() == root)
-                bankPlace = tempProperty;
+                if (tempProperty.getCoordinate()[0] == 70)
+                    if (tempProperty.getCoordinate()[1] == 170) {
+                        bankPlace = tempProperty;
+                        break;
+                    }
         }
         bankSystem = new Bank(bankPlace, root);
 //        bankSystem = new Bank(municipality.buyProperty(new float[]{40, 40}, new float[]{70, 170}, root), root);
@@ -40,6 +44,7 @@ public class City implements CityInterface {
     public City(Boolean has, User user) {
         characters = Database.loadCharacter();
         Character temp = null;
+        System.out.println(user.getUsername());
         for (Character tempCharacter : characters) {
             if (tempCharacter.getUserInfo().getUsername().equals(user.getUsername())) {
                 temp = tempCharacter;
@@ -49,12 +54,15 @@ public class City implements CityInterface {
         Property bankPlace = null;
         for (Property tempProperty : properties) {
             if (tempProperty.getOwner() == root)
-                bankPlace = tempProperty;
+                if (tempProperty.getCoordinate()[0] == 70)
+                    if (tempProperty.getCoordinate()[1] == 170) {
+                        bankPlace = tempProperty;
+                        break;
+                    }
         }
         bankSystem = new Bank(bankPlace, root);
         stockMarket = new StockMarket();
         stockMarket.startMarketSimulation();
-        System.out.println("city");
         beginGame(temp);
     }
 
@@ -64,7 +72,11 @@ public class City implements CityInterface {
         Property bankPlace = null;
         for (Property tempProperty : properties) {
             if (tempProperty.getOwner() == root)
-                bankPlace = tempProperty;
+                if (tempProperty.getCoordinate()[0] == 70)
+                    if (tempProperty.getCoordinate()[1] == 170) {
+                        bankPlace = tempProperty;
+                        break;
+                    }
         }
         bankSystem = new Bank(bankPlace, root);
         stockMarket = new StockMarket();
@@ -148,15 +160,16 @@ public class City implements CityInterface {
         System.out.println("***************************************");
         System.out.println("****         go to place           ****");
         System.out.println("***************************************");
-        municipality.showProperties(character, properties);
+        municipality.showProperties(character, Database.LoadProperties());
         System.out.println("Tip: if you want travel by coordinate write in this order :(divide it by comma) X,Y");
 
         Scanner MyPlace = new Scanner(System.in);
         String place = MyPlace.nextLine();
         String placeX = "", placeY = "";
         float locationX = 0.0f, locationY = 0.0f;
-
+        System.out.println(place);
         if (place.contains(",")) {
+            System.out.println("contain ,");
             String[] placeXY = place.split(",");
             placeX = placeXY[0];
             placeY = placeXY[1];
@@ -167,7 +180,7 @@ public class City implements CityInterface {
 
         Property location = null;
         boolean isWrongData = false;
-        for (Property property : properties) {
+        for (Property property : Database.LoadProperties()) {
             if (property.getIndustryTitle().equals(place)) {
                 location = property;
                 isWrongData = true;
@@ -301,6 +314,7 @@ public class City implements CityInterface {
                 for (Property property : character.getProperties()) {
                     xANDy[0] = any.getCoordinates().split(",")[0];
                     xANDy[1] = any.getCoordinates().split(",")[1];
+                    System.out.println(xANDy[0]+","+xANDy[1]);
                     if (Float.parseFloat(xANDy[0]) == property.getCoordinate()[0] && Float.parseFloat(xANDy[1]) == property.getCoordinate()[1]) {
                         requestPro = property;
                     }
@@ -371,7 +385,7 @@ public class City implements CityInterface {
 
                 Property location = null;
                 boolean isWrongData = false;
-                for (Property property : properties) {
+                for (Property property : Database.LoadProperties()) {
                     if (String.valueOf(property.getId()).equals(place)) {
                         isWrongData = true;
                         location = property;

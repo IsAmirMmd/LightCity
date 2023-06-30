@@ -12,6 +12,7 @@ import java.util.Properties;
 import java.util.Random;
 
 public class Municipality implements MunicipalityInterface {
+    public static ArrayList<Character> characters = Database.loadCharacter();
     public static ArrayList<Property> properties = Database.LoadProperties();
     private BankAccount account;
     public final int WIDTH_MAP = 140;
@@ -28,6 +29,8 @@ public class Municipality implements MunicipalityInterface {
 
 //        we need it for just one time for creating city's buildings
 //        generateForOnce();
+
+        characters.size();
     }
 
     private void generateForOnce() {
@@ -103,7 +106,7 @@ public class Municipality implements MunicipalityInterface {
             System.out.println("property id    : " + property.getId());
             System.out.println("title          : " + property.getIndustryTitle());
             System.out.println("coordinate     : [" + property.getCoordinate()[0] + "," + property.getCoordinate()[1] + "]");
-            System.out.println("owner          : " + (property.getOwner() != null ? property.getOwner().getUserInfo().getUsername() : "mayor"));
+            System.out.println("owner          : " + property.getOwner().getUserInfo().getUsername());
             System.out.print("for sale       : " + (property.isForSale() ? "yes" : "no"));
             if (property.getOwner() == character) System.out.println("(you own)");
             else System.out.println("");

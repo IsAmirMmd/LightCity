@@ -7,6 +7,7 @@ import java.util.Scanner;
 
 public class Menu {
     private static Game game = new Game();
+    Database database = new Database();
     private static Scanner scanner = new Scanner(System.in);
 
     public static void showMenu() {
@@ -50,10 +51,10 @@ public class Menu {
             int num = myobj.nextInt();
             switch (num) {
                 case 1:
-                    loginMenu();
+                    game.continueGame(loginMenu());
                     break;
                 case 2:
-                    signupMenu();
+                    game.startGame(signupMenu());
                     break;
                 case 0:
                     System.exit(0);
@@ -78,7 +79,7 @@ public class Menu {
             int num = myobj.nextInt();
             switch (num) {
                 case 1:
-                    loginMenu();
+                    game.continueGame(loginMenu());
                     break;
                 case 0:
                     System.exit(0);

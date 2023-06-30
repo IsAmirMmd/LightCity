@@ -1,5 +1,6 @@
 package org.example.models;
 
+import com.mysql.cj.jdbc.jmx.LoadBalanceConnectionGroupManager;
 import org.example.Database;
 import org.example.Game;
 import org.example.defualtSystem.Life;
@@ -30,7 +31,7 @@ public class Character implements CharacterInterface {
         this.account = account;
         this.life = life;
         this.job = job;
-        this.properties = properties;
+        this.properties = new ArrayList<>();
         this.inPosition = inPosition;
     }
 
@@ -73,13 +74,14 @@ public class Character implements CharacterInterface {
     }
 
     public ArrayList<Property> getProperties() {
-        ArrayList<Property> propertyList = new ArrayList<>();
-
-        for (Property property : City.properties) {
-            if (property.getOwner() != null && property.getOwner() == this)
-                propertyList.add(property);
-        }
-        return propertyList;
+//        ArrayList<Property> propertyList = new ArrayList<>();
+//
+//        for (Property property : Database.LoadProperties()) {
+//            System.out.println(property.getOwner().getUserInfo().getUsername());
+//            if (property.getOwner() == this)
+//                propertyList.add(property);
+//        }
+        return properties;
     }
 
     public void setProperties(Property property) {
@@ -131,11 +133,10 @@ public class Character implements CharacterInterface {
                         System.out.println("   2 - and the worth of property :" + inTime.getPrice() + "$");
                         System.out.println("   3 - for confirm request enter[y/n]?");
                         if (test.nextLine().equals("y")) {
-                            if (inTime.getPrice() <= this.getAccount().getMoney()){
+                            if (inTime.getPrice() <= this.getAccount().getMoney()) {
                                 Database.addRequset(inTime.getOwner(), this, inTime);
                                 System.out.println("your request will be answered soon as the owner read it!");
-                            }
-                            else{
+                            } else {
                                 System.out.println("you don't have enough money!");
                                 positionProcessing();
                             }
