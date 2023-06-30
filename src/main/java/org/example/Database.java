@@ -660,5 +660,202 @@ public class Database {
         return requests;
     }
 
+    public static void createIndustry(Industry industry) {
+        String insertQuery = "INSERT INTO `industry`(`title`, `cordinate_x`, `cordinate_y`, `owner`, `income`, `employees`) VALUES (?,?,?,?,?,?)";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement statement = connection.prepareStatement(insertQuery)) {
+
+            String title = industry.getTitle();
+            float x = industry.getCoordinate()[0];
+            float y = industry.getCoordinate()[1];
+            String owner = industry.getOwner().getUserInfo().getUsername();
+            float income = industry.getIncome();
+
+            String allEmp = "";
+
+            statement.setString(1, title);
+            statement.setFloat(2, x);
+            statement.setFloat(3, y);
+            statement.setString(4, owner);
+            statement.setFloat(5, income);
+            statement.setString(6, allEmp);
+
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static ArrayList<Industry> loadAllIndustries() {
+        String selectQuery = "SELECT * FROM `industry`";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement statement = connection.prepareStatement(selectQuery)) {
+
+            ResultSet resultSet = statement.executeQuery();
+            ArrayList<Industry> industries = new ArrayList<>();
+
+            while (resultSet.next()) {
+                String title = resultSet.getString("title");
+                float x = resultSet.getFloat("cordinate_x");
+                float y = resultSet.getFloat("cordinate_y");
+                String owner = resultSet.getString("owner");
+                float income = resultSet.getFloat("income");
+                String[] employeesArray = resultSet.getString("employees").split(",");
+                ArrayList<Employee> employees = new ArrayList<>();
+                for (String employeeUsername : employeesArray) {
+                    if (!employeeUsername.isEmpty()) {
+                        Employee employee = loadEmployee(employeeUsername);
+                        employees.add(employee);
+                    }
+                }
+                Character temp = null;
+                for (Character character : loadCharacter()) {
+                    if (character.getUserInfo().getUsername().equals(owner)) {
+                        temp = character;
+                    }
+                }
+                Property tempProperty = null;
+                for (Property property : LoadProperties()) {
+                    if (property.getCoordinate()[0] == x && property.getCoordinate()[1] == y) {
+                        tempProperty = property;
+                    }
+                }
+                Industry industry = new Industry(title, tempProperty, temp, income);
+                industry.setEmployees(employees);
+                industries.add(industry);
+            }
+
+            return industries;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static Industry loadIndustry(String industryTitle) {
+        String selectQuery = "SELECT * FROM `industry` WHERE `title` = ?";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement statement = connection.prepareStatement(selectQuery)) {
+
+            statement.setString(1, industryTitle);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                float x = resultSet.getFloat("cordinate_x");
+                float y = resultSet.getFloat("cordinate_y");
+                String owner = resultSet.getString("owner");
+                float income = resultSet.getFloat("income");
+                String[] employeesArray = resultSet.getString("employees").split(",");
+                ArrayList<Employee> employees = new ArrayList<>();
+                for (String employeeUsername : employeesArray) {
+                    if (!employeeUsername.isEmpty()) {
+                        Employee employee = loadEmployee(employeeUsername);
+                        employees.add(employee);
+                    }
+                }
+
+                Character temp = null;
+                for (Character character : loadCharacter()) {
+                    if (character.getUserInfo().getUsername().equals(owner)) {
+                        temp = character;
+                    }
+                }
+                Property tempProperty = null;
+                for (Property property : LoadProperties()) {
+                    if (property.getCoordinate()[0] == x && property.getCoordinate()[1] == y) {
+                        tempProperty = property;
+                    }
+                }
+                Industry industry = new Industry(industryTitle, tempProperty, temp, income);
+                industry.setEmployees(employees);
+                return industry;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static void saveEmployee(Employee employee) {
+        String insertQuery = "INSERT INTO `employee`(`username`, `industry_title`, `base_salary`) VALUES (?, ?, ?)";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement statement = connection.prepareStatement(insertQuery)) {
+
+            statement.setString(1, employee.getUsername());
+            statement.setString(2, employee.getIndustry().getTitle());
+            statement.setFloat(3, employee.getBaseSalary());
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static Employee loadEmployee(String username) {
+        String selectQuery = "SELECT * FROM `employee` WHERE `username` = ?";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement statement = connection.prepareStatement(selectQuery)) {
+
+            statement.setString(1, username);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                String industryTitle = resultSet.getString("industry_title");
+                Industry industry = loadIndustry(industryTitle);
+                float baseSalary = resultSet.getFloat("base_salary");
+                BankAccount temp = null;
+                for (BankAccount bankAccount : loadBankAccounts()) {
+                    if (bankAccount.getOwner().equals(username)) {
+                        temp = bankAccount;
+                        break;
+                    }
+                }
+                Employee employee = new Employee(username, industry, baseSalary, temp);
+                return employee;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static void updatePropertyName(Property property, String title) {
+        String sql = "UPDATE properties SET indtitle=? WHERE id=?";
+        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, title);
+            statement.setInt(2, property.getId());
+
+            statement.executeUpdate();
+            statement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void cancelForSell(Character owner, Property tempProperty) {
+        String sql = "UPDATE properties SET ForSale=? WHERE id=?";
+        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setBoolean(1, false);
+
+            statement.setInt(2, tempProperty.getId());
+
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
 

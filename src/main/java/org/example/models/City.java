@@ -7,6 +7,7 @@ import org.example.defualtSystem.Municipality;
 import org.example.defualtSystem.StockMarket;
 import org.example.interfaces.CityInterface;
 
+import javax.sql.rowset.serial.SerialStruct;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
@@ -255,17 +256,19 @@ public class City implements CityInterface {
         } else if (inLocation.getIndustryTitle().equals("not-industry")) {
             System.out.println("you are here : [" + inLocation.getCoordinate()[0] + "," + inLocation.getCoordinate()[1] + "]");
             System.out.println("you can make your business here :)");
-            if (inLocation.getOwner() != null) {
-                System.out.println("owner of this place is Mr/Ms " + inLocation.getOwner().getUserInfo().getUsername());
-            } else
+            if (inLocation.getOwner().equals(root)) {
                 System.out.println("owner of this place is Mayor and his dear wife !");
+            } else {
+                System.out.println("owner of this place is Mr/Ms " + inLocation.getOwner().getUserInfo().getUsername());
+            }
         } else if (!inLocation.getIndustryTitle().equals("not-industry")) {
             System.out.println("you are here : [" + inLocation.getCoordinate()[0] + "," + inLocation.getCoordinate()[1] + "]");
             System.out.println("at the " + inLocation.getIndustryTitle());
-            if (inLocation.getOwner() != null) {
-                System.out.println("owner of this place is Mr/Ms " + inLocation.getOwner().getUserInfo().getUsername());
-            } else
+            if (inLocation.getOwner().equals(root)) {
                 System.out.println("owner of this place is Mayor and his dear wife !");
+            } else {
+                System.out.println("owner of this place is Mr/Ms " + inLocation.getOwner().getUserInfo().getUsername());
+            }
         }
         Scanner owDeta = new Scanner(System.in);
         System.out.println("*****************************************");
@@ -518,8 +521,59 @@ public class City implements CityInterface {
     }
 
     public void Found_Industry(Character character) {
-        System.out.println("do something");
+        Scanner found = new Scanner(System.in);
+        System.out.println("for making industry you have to : ");
+        System.out.println("   1 - buy property");
+        System.out.println("   2 - create product");
+        System.out.println("   3 - give salary to employee");
+        System.out.println("*************");
+        System.out.println("in this list you can check the property that you have :");
+        municipality.showProperties(character, character.getProperties());
+        if (character.getProperties().size() == 0) {
+            System.out.println("you don't have any property");
+            System.out.println("you can buy property with [1]");
+            System.out.println("back                      [2]");
+            switch (found.nextInt()) {
+                case 1:
+                    GoTo(character);
+                case 2:
+                    Properties(character);
+            }
+        }
+        System.out.println("which one do you want to lunch business in it?");
+        System.out.println("enter ID of property ...");
+        int propID = found.nextInt();
+        for (Property property : Database.LoadProperties()) {
+            if (propID == property.getId()) {
+                if (property.getIndustryTitle().equals("not-industry"))
+                    makePropIndustry(character, property);
+                else System.out.println("Error : You can't make another business in this place!");
+            }
+        }
+
+        System.out.println("*   back     [0]  *");
+        System.out.println("*************************************");
+        System.out.println("enter your command:");
+        switch (found.nextInt()) {
+            case 0 -> Management(character);
+        }
     }
+
+    public void makePropIndustry(Character character, Property property) {
+        Scanner income = new Scanner(System.in);
+        System.out.println("enter your employees' income  :");
+        float employeeIncome = income.nextFloat();
+        System.out.println("enter title for your industry :");
+        String title = income.next();
+        System.out.println("you make your industry with name : " + title + " successfully");
+//        creating industry object
+        Industry industry = new Industry(title, property, character, employeeIncome);
+//        update data in database
+        Database.createIndustry(industry);
+        Database.updatePropertyName(property, title);
+        Database.cancelForSell(character, property);
+    }
+
 
     public void Economy(Character character) {
         Scanner scanner = new Scanner(System.in);
@@ -541,7 +595,7 @@ public class City implements CityInterface {
     }
 
     public void Show_Incomes(Character character) {
-        System.out.println("do something");
+        System.out.println("you don't have any income");
     }
 
     public void Show_Job_Detail(Character character) {

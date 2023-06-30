@@ -48,6 +48,10 @@ public class Industry extends Property{
         this.employees.add(employee);
     }
 
+    public void setEmployees(ArrayList<Employee> employees) {
+        this.employees = employees;
+    }
+
     public void startPaySalary(){
         Thread thread = new Thread(()->{
            while (true){
