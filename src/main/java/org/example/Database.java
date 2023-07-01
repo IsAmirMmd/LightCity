@@ -523,7 +523,7 @@ public class Database {
     }
 
     public static void saveJob(Job job) {
-        String insertQuery = "INSERT INTO `job`(`title`, `income`, `inid`) VALUES (?,?,?)";
+        String insertQuery = "INSERT INTO `job`(`title`, `income`, `inid`,`username`) VALUES (?,?,?,?)";
 
         try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
              PreparedStatement statement = connection.prepareStatement(insertQuery)) {
@@ -534,6 +534,7 @@ public class Database {
             statement.setString(1, title);
             statement.setFloat(2, money);
             statement.setString(3, IndustyID);
+            statement.setString(4, job.getUser());
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -552,7 +553,8 @@ public class Database {
                 String title = resultSet.getString("title");
                 float income = resultSet.getFloat("income");
                 String industryId = resultSet.getString("inid");
-                Job job = new Job(title, income, industryId);
+                String username = resultSet.getString("username");
+                Job job = new Job(title, income, industryId, username);
                 jobs.add(job);
             }
 

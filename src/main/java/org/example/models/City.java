@@ -36,7 +36,6 @@ public class City implements CityInterface {
     public City(Boolean has, User user) {
         characters = Database.loadCharacter();
         Character temp = null;
-        System.out.println(user.getUsername());
         for (Character tempCharacter : characters) {
             if (tempCharacter.getUserInfo().getUsername().equals(user.getUsername())) {
                 temp = tempCharacter;
@@ -329,7 +328,29 @@ public class City implements CityInterface {
 
 
     public void My_Job(Character character) {
-        System.out.println("do something");
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("  ***   your job info will be here ***");
+        Job temp = null;
+        for (Job job : Database.loadJobs()) {
+            if (job.getUser().equals(character.getUserInfo().getUsername())) {
+                temp = job;
+            }
+        }
+        if (temp == null) {
+            System.out.println("you are non work!");
+        } else {
+            System.out.println("your work is : " + temp.getTitle());
+            System.out.println("*      check job info    [1]        *");
+            System.out.println("*===================================*");
+        }
+        System.out.println("*      back              [2]        *");
+        System.out.println("*===================================*");
+        System.out.println("enter your command:");
+        switch (scanner.next()) {
+            case "1" -> Economy(character);
+            case "2" -> Dashboard(character);
+        }
     }
 
     public void Properties(Character character) {
@@ -557,10 +578,14 @@ public class City implements CityInterface {
         System.out.println("enter title for your industry :");
         String title = income.next();
         System.out.println("you make your industry with name : " + title + " successfully");
+        Job tempJob = new Job(title, 3, title + property.getId(), character.getUserInfo().getUsername());
+        character.setJob(tempJob);
 //        creating industry object
         Industry industry = new Industry(title, property, character, employeeIncome);
 //        update data in database
         Database.createIndustry(industry);
+        Database.saveJob(tempJob);
+        Database.updateCharacter("job", character);
         Database.updatePropertyName(property, title);
         Database.cancelForSell(character, property);
     }
