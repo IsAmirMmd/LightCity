@@ -54,7 +54,8 @@ public class BankAccount {
             if (amount <= money) {
                 Bank.turnover.transfer(amount, -1);
                 money -= amount;
-                Database.updateBankAccount(character.getUserInfo().getUsername(), money);
+                character.getAccount().setLastChange(new Date());
+                Database.updateBankAccount(character.getUserInfo().getUsername(), money, character.getAccount().getLastChange());
                 return true;
             } else
                 return false;
@@ -68,7 +69,8 @@ public class BankAccount {
             logs += log;
             Bank.turnover.transfer(amount, 1);
             money += amount;
-            Database.updateBankAccount(character.getUserInfo().getUsername(), money);
+            character.getAccount().setLastChange(new Date());
+            Database.updateBankAccount(character.getUserInfo().getUsername(), money, character.getAccount().getLastChange());
             return true;
         }
         return false;

@@ -473,14 +473,15 @@ public class Database {
         }
     }
 
-    public static void updateBankAccount(String username, float newMoney) {
-        String updateQuery = "UPDATE `bank-account` SET `money`=? WHERE `username`=?";
-
+    public static void updateBankAccount(String username, float newMoney, Date date) {
+        String updateQuery = "UPDATE `bank-account` SET `money`=? AND `last`=? WHERE `username`=?";
+        String last = date.toString();
         try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
              PreparedStatement statement = connection.prepareStatement(updateQuery)) {
 
             statement.setFloat(1, newMoney);
-            statement.setString(2, username);
+            statement.setString(2, last);
+            statement.setString(3, username);
             statement.executeUpdate();
 
         } catch (SQLException e) {
