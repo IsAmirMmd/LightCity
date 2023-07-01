@@ -1,10 +1,7 @@
 package org.example.models;
 
 import org.example.Database;
-import org.example.defualtSystem.Bank;
-import org.example.defualtSystem.Life;
-import org.example.defualtSystem.Municipality;
-import org.example.defualtSystem.StockMarket;
+import org.example.defualtSystem.*;
 import org.example.interfaces.CityInterface;
 
 import javax.sql.rowset.serial.SerialStruct;
@@ -22,17 +19,26 @@ public class City implements CityInterface {
 
     private Character root = Database.root;
 
+    //    for first time sign up and also without any tables.
     public City() {
         characters = new ArrayList<>();
         municipality = new Municipality();
+//        create a bank
         Property bankPlace = municipality.buyPropertyForOne(new float[]{40, 40}, new float[]{70, 170}, root);
         bankSystem = new Bank(bankPlace, root);
         Database.createIndustry(bankSystem);
         Database.updatePropertyName(bankPlace, "Bank");
+//        create a fast food shop
+        Property fastShop = municipality.buyPropertyForOne(new float[]{40, 40}, new float[]{20, 170}, root);
+        FastFoodShop fastFoodShop = new FastFoodShop("sandwich", fastShop, root);
+        Database.createIndustry(fastFoodShop);
+        Database.updatePropertyName(fastShop, fastFoodShop.getTitle());
+//        run stock market
         stockMarket = new StockMarket();
         stockMarket.startMarketSimulation();
     }
 
+    //for login and another logs
     public City(Boolean has, User user) {
         characters = Database.loadCharacter();
         Character temp = null;
@@ -57,6 +63,7 @@ public class City implements CityInterface {
         beginGame(temp);
     }
 
+    //    for first sign up but also there's a city and tables
     public City(Boolean has) {
         characters = Database.loadCharacter();
         municipality = new Municipality();
