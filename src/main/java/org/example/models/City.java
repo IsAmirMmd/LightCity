@@ -811,36 +811,34 @@ public class City implements CityInterface {
                         System.out.println("2. hamburger ***** 0.30$ ***** 18F & 15W");
                         System.out.println("3. pizza ********* 0.33$ ***** 22F & 20W");
                         System.out.println("4. soda ********** 0.13$ *********** 10W");
-                        if (test.nextInt() == 1){
+                        String testFood = test.next();
+                        if (testFood.equals("1")) {
                             System.out.println("you bought hotdog successfully for 0.23$");
                             character.getLife().setFood(character.getLife().getFood() + 10.0f);
                             character.getLife().setWater(character.getLife().getWater() + 10.0f);
-                            character.getAccount().withdraw(character,0.23f);
-                            Database.updateCharacter("life",character);
-                            Database.updateBankAccount(character.getAccount().getOwner(),character.getAccount().getMoney(),character.getAccount().getLastChange());
-                        }
-                        else if (test.nextInt() == 2){
+                            character.getAccount().withdraw(character, 0.23f);
+                            Database.updateCharacter("life", character);
+                            Database.updateBankAccount(character.getAccount().getOwner(), character.getAccount().getMoney(), character.getAccount().getLastChange());
+                        } else if (testFood.equals("2")) {
                             System.out.println("you bought hamburger successfully for 0.30$");
                             character.getLife().setFood(character.getLife().getFood() + 18.0f);
                             character.getLife().setWater(character.getLife().getWater() + 15.0f);
-                            character.getAccount().withdraw(character,0.30f);
-                            Database.updateCharacter("life",character);
-                            Database.updateBankAccount(character.getAccount().getOwner(),character.getAccount().getMoney(),character.getAccount().getLastChange());
-                        }
-                        else if (test.nextInt() == 3){
+                            character.getAccount().withdraw(character, 0.30f);
+                            Database.updateCharacter("life", character);
+                            Database.updateBankAccount(character.getAccount().getOwner(), character.getAccount().getMoney(), character.getAccount().getLastChange());
+                        } else if (testFood.equals("3")) {
                             System.out.println("you bought pizza successfully for 0.33$");
                             character.getLife().setFood(character.getLife().getFood() + 22.0f);
                             character.getLife().setWater(character.getLife().getWater() + 20.0f);
-                            character.getAccount().withdraw(character,0.33f);
-                            Database.updateCharacter("life",character);
-                            Database.updateBankAccount(character.getAccount().getOwner(),character.getAccount().getMoney(),character.getAccount().getLastChange());
-                        }
-                        else if (test.nextInt() == 4){
+                            character.getAccount().withdraw(character, 0.33f);
+                            Database.updateCharacter("life", character);
+                            Database.updateBankAccount(character.getAccount().getOwner(), character.getAccount().getMoney(), character.getAccount().getLastChange());
+                        } else if (testFood.equals("4")) {
                             System.out.println("you bought soda successfully for 0.33$");
                             character.getLife().setWater(character.getLife().getWater() + 10.0f);
-                            character.getAccount().withdraw(character,0.13f);
-                            Database.updateCharacter("life",character);
-                            Database.updateBankAccount(character.getAccount().getOwner(),character.getAccount().getMoney(),character.getAccount().getLastChange());
+                            character.getAccount().withdraw(character, 0.13f);
+                            Database.updateCharacter("life", character);
+                            Database.updateBankAccount(character.getAccount().getOwner(), character.getAccount().getMoney(), character.getAccount().getLastChange());
                         }
                     }
                     System.out.println("have a nice meal!");

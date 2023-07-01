@@ -30,7 +30,7 @@ public class Municipality implements MunicipalityInterface {
 //        height of map : 190
 
 //        we need it for just one time for creating city's buildings
-//        generateForOnce();
+        generateForOnce();
     }
 
     private void generateForOnce() {

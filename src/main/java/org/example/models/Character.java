@@ -167,10 +167,9 @@ public class Character implements CharacterInterface {
                     }
                 }
                 case 3 -> {
-                    if (inTime.getIndustryTitle().equals("not-industry")) {
+                    if (!inTime.getIndustryTitle().equals("not-industry")) {
                         System.out.println("well!");
-//                        this industry has products such as food,liquid,...
-//                        and it will show a menu of this property
+
                     }
                 }
                 case 4 -> Game.city.beginGame(this);
