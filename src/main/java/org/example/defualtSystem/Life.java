@@ -92,14 +92,26 @@ public class Life {
     }
 
     public void setFood(float food) {
-        this.food = food;
+        if (food + getFood() >= 100)
+            this.food = 100;
+        else {
+            this.food = food;
+        }
     }
 
     public void setWater(float water) {
-        this.water = water;
+        if (water + getWater() >= 100)
+            this.water = 100;
+        else {
+            this.water = water;
+        }
     }
 
     public void setSleep(float sleep) {
-        this.sleep = sleep;
+        if (sleep + getSleep() >= 100)
+            this.sleep = 100;
+        else {
+            this.sleep = sleep;
+        }
     }
 }

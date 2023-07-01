@@ -1,17 +1,13 @@
 package org.example.models;
 
 import org.example.Database;
-import org.example.defualtSystem.Bank;
-import org.example.defualtSystem.Life;
-import org.example.defualtSystem.Municipality;
-import org.example.defualtSystem.StockMarket;
+import org.example.Game;
+import org.example.defualtSystem.*;
 import org.example.interfaces.CityInterface;
 
+import javax.naming.spi.DirObjectFactory;
 import javax.sql.rowset.serial.SerialStruct;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Properties;
-import java.util.Scanner;
+import java.util.*;
 
 public class City implements CityInterface {
     public static ArrayList<Character> characters;
@@ -22,17 +18,26 @@ public class City implements CityInterface {
 
     private Character root = Database.root;
 
+    //    for first time sign up and also without any tables.
     public City() {
         characters = new ArrayList<>();
         municipality = new Municipality();
+//        create a bank
         Property bankPlace = municipality.buyPropertyForOne(new float[]{40, 40}, new float[]{70, 170}, root);
         bankSystem = new Bank(bankPlace, root);
         Database.createIndustry(bankSystem);
         Database.updatePropertyName(bankPlace, "Bank");
+//        create a fast food shop
+        Property fastShop = municipality.buyPropertyForOne(new float[]{40, 40}, new float[]{20, 170}, root);
+        FastFoodShop fastFoodShop = new FastFoodShop("sandwich", fastShop, root);
+        Database.createIndustry(fastFoodShop);
+        Database.updatePropertyName(fastShop, fastFoodShop.getTitle());
+//        run stock market
         stockMarket = new StockMarket();
         stockMarket.startMarketSimulation();
     }
 
+    //for login and another logs
     public City(Boolean has, User user) {
         characters = Database.loadCharacter();
         Character temp = null;
@@ -42,6 +47,20 @@ public class City implements CityInterface {
             }
         }
         municipality = new Municipality();
+//        fast food shop
+        Property fastShop = null;
+        for (Property tempProperty : properties) {
+            if (tempProperty.getOwner() == root)
+                if (tempProperty.getCoordinate()[0] == 20)
+                    if (tempProperty.getCoordinate()[1] == 170) {
+                        fastShop = tempProperty;
+                        break;
+                    }
+        }
+        FastFoodShop fastFoodShop = new FastFoodShop("sandwich", fastShop, root);
+        Database.createIndustry(fastFoodShop);
+        Database.updatePropertyName(fastShop, fastFoodShop.getTitle());
+//        bank place
         Property bankPlace = null;
         for (Property tempProperty : properties) {
             if (tempProperty.getOwner() == root)
@@ -57,9 +76,23 @@ public class City implements CityInterface {
         beginGame(temp);
     }
 
+    //    for first sign up but also there's a city and tables
     public City(Boolean has) {
         characters = Database.loadCharacter();
         municipality = new Municipality();
+        //        fast food shop
+        Property fastShop = null;
+        for (Property tempProperty : properties) {
+            if (tempProperty.getOwner() == root)
+                if (tempProperty.getCoordinate()[0] == 20)
+                    if (tempProperty.getCoordinate()[1] == 170) {
+                        fastShop = tempProperty;
+                        break;
+                    }
+        }
+        FastFoodShop fastFoodShop = new FastFoodShop("sandwich", fastShop, root);
+        Database.createIndustry(fastFoodShop);
+        Database.updatePropertyName(fastShop, fastFoodShop.getTitle());
         Property bankPlace = null;
         for (Property tempProperty : properties) {
             if (tempProperty.getOwner() == root)
@@ -708,10 +741,120 @@ public class City implements CityInterface {
         System.out.println("* cancel and back          [2] *");
 
         switch (foodScan.next()) {
-            case "1" -> GoTo(character);
+            case "1" -> industriesBar(character);
             case "2" -> Life_Detail(character);
         }
     }
+
+    public void industriesBar(Character character) {
+        ArrayList<Property> industries = new ArrayList<>();
+        for (Property property : Database.LoadProperties()) {
+            if (!property.getIndustryTitle().equals("not-industry")) {
+                industries.add(property);
+            }
+        }
+        municipality.showProperties(character, industries);
+
+        Scanner MyPlace = new Scanner(System.in);
+        String place = MyPlace.nextLine();
+        String placeX = "", placeY = "";
+        float locationX = 0.0f, locationY = 0.0f;
+        System.out.println(place);
+        if (place.contains(",")) {
+            String[] placeXY = place.split(",");
+            placeX = placeXY[0];
+            placeY = placeXY[1];
+
+            locationX = Float.parseFloat(placeX);
+            locationY = Float.parseFloat(placeY);
+        }
+
+        Property location = null;
+        boolean isWrongData = false;
+        for (Property property : industries) {
+            if (property.getIndustryTitle().equals(place)) {
+                location = property;
+                isWrongData = true;
+            } else if (String.valueOf(property.getId()).equals(place)) {
+                isWrongData = true;
+                location = property;
+            } else if (locationX == property.getCoordinate()[0] && locationY == property.getCoordinate()[1]) {
+                isWrongData = true;
+                location = property;
+            }
+
+        }
+        if (!isWrongData) {
+            System.out.println("You Enter details wrongly !");
+            System.out.println("please enter again...");
+            GoTo(character);
+        }
+        character.gotToLocation(location);
+        shopProcessing(character, location);
+
+    }
+
+    public void shopProcessing(Character character, Property property) {
+        BankAccount account = character.getAccount();
+        Scanner PropertyScan = new Scanner(System.in);
+        Property inTime = character.getInPosition();
+        System.out.println("** you are here : " + inTime.getCoordinate()[0] + "," + inTime.getCoordinate()[1] + " **");
+        System.out.println("what do you want to do?");
+        System.out.println("1. buy industry's products");
+        System.out.println("2. cancel and back");
+        try {
+            Scanner test = new Scanner(System.in);
+            switch (PropertyScan.nextInt()) {
+                case 1 -> {
+                    if (property.getIndustryTitle().equals("sandwich")) {
+                        System.out.println("1. hotdog ******** 0.23$ ***** 10F & 10W");
+                        System.out.println("2. hamburger ***** 0.30$ ***** 18F & 15W");
+                        System.out.println("3. pizza ********* 0.33$ ***** 22F & 20W");
+                        System.out.println("4. soda ********** 0.13$ *********** 10W");
+                        String testFood = test.next();
+                        if (testFood.equals("1")) {
+                            System.out.println("you bought hotdog successfully for 0.23$");
+                            character.getLife().setFood(character.getLife().getFood() + 10.0f);
+                            character.getLife().setWater(character.getLife().getWater() + 10.0f);
+                            character.getAccount().withdraw(character, 0.23f);
+                            Database.updateCharacter("life", character);
+                            Database.updateBankAccount(character.getAccount().getOwner(), character.getAccount().getMoney(), character.getAccount().getLastChange());
+                        } else if (testFood.equals("2")) {
+                            System.out.println("you bought hamburger successfully for 0.30$");
+                            character.getLife().setFood(character.getLife().getFood() + 18.0f);
+                            character.getLife().setWater(character.getLife().getWater() + 15.0f);
+                            character.getAccount().withdraw(character, 0.30f);
+                            Database.updateCharacter("life", character);
+                            Database.updateBankAccount(character.getAccount().getOwner(), character.getAccount().getMoney(), character.getAccount().getLastChange());
+                        } else if (testFood.equals("3")) {
+                            System.out.println("you bought pizza successfully for 0.33$");
+                            character.getLife().setFood(character.getLife().getFood() + 22.0f);
+                            character.getLife().setWater(character.getLife().getWater() + 20.0f);
+                            character.getAccount().withdraw(character, 0.33f);
+                            Database.updateCharacter("life", character);
+                            Database.updateBankAccount(character.getAccount().getOwner(), character.getAccount().getMoney(), character.getAccount().getLastChange());
+                        } else if (testFood.equals("4")) {
+                            System.out.println("you bought soda successfully for 0.33$");
+                            character.getLife().setWater(character.getLife().getWater() + 10.0f);
+                            character.getAccount().withdraw(character, 0.13f);
+                            Database.updateCharacter("life", character);
+                            Database.updateBankAccount(character.getAccount().getOwner(), character.getAccount().getMoney(), character.getAccount().getLastChange());
+                        }
+                    }
+                    System.out.println("have a nice meal!");
+                    System.out.println("we're redirecting you to life details ...");
+                    Life_Detail(character);
+                }
+                case 2 -> {
+                    Eat(character);
+                }
+            }
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input. Please enter a valid integer.");
+            shopProcessing(character, property);
+        }
+    }
+
 
     public void Exit() {
         System.exit(0);

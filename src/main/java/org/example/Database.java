@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class Database {
 
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://localhost:3307/lightcity";
+    static final String DB_URL = "jdbc:mysql://localhost:3306/lightcity";
 
     // Database credentials
     static final String USER = "root";
