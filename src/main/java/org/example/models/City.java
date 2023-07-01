@@ -25,19 +25,10 @@ public class City implements CityInterface {
     public City() {
         characters = new ArrayList<>();
         municipality = new Municipality();
-//        Get Bank Property from municipality
-//        bank has bought for one time
-        Property bankPlace = null;
-        for (Property tempProperty : properties) {
-            if (tempProperty.getOwner() == root)
-                if (tempProperty.getCoordinate()[0] == 70)
-                    if (tempProperty.getCoordinate()[1] == 170) {
-                        bankPlace = tempProperty;
-                        break;
-                    }
-        }
+        Property bankPlace = municipality.buyPropertyForOne(new float[]{40, 40}, new float[]{70, 170}, root);
         bankSystem = new Bank(bankPlace, root);
-//        bankSystem = new Bank(municipality.buyProperty(new float[]{40, 40}, new float[]{70, 170}, root), root);
+        Database.createIndustry(bankSystem);
+        Database.updatePropertyName(bankPlace, "Bank");
         stockMarket = new StockMarket();
         stockMarket.startMarketSimulation();
     }

@@ -206,11 +206,7 @@ public class Database {
             statement.setFloat(2, height);
             statement.setFloat(3, xCoordinate);
             statement.setFloat(4, yCoordinate);
-            if (property.getOwner() == null) {
-                statement.setString(5, "mayor");
-            } else {
-                statement.setString(5, property.getOwner().getUserInfo().getUsername());
-            }
+            statement.setString(5, property.getOwner().getUserInfo().getUsername());
             statement.setFloat(6, property.getPrice());
             statement.setString(7, property.getIndustryTitle());
             statement.executeUpdate();
