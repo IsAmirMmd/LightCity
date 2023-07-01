@@ -5,6 +5,7 @@ import org.example.interfaces.MunicipalityInterface;
 import org.example.models.BankAccount;
 import org.example.models.Character;
 import org.example.models.Property;
+import org.example.models.User;
 
 import javax.xml.crypto.Data;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ public class Municipality implements MunicipalityInterface {
     public final int WIDTH_MAP = 140;
     public final int HEIGHT_MAP = 240;
 
+    public static Character root = new Character(new User("root", "1234"), new BankAccount("root", "1234", 100, null), null, null, null, null);
 
     public Municipality() {
         generateProperties();
@@ -39,7 +41,7 @@ public class Municipality implements MunicipalityInterface {
 
         for (float y = 20; y <= HEIGHT_MAP - 20; y++) {
             for (float x = 20; x <= WIDTH_MAP - 20; x++) {
-                Property tempProperty = new Property(new float[]{WIDTH_PLACE, HEIGHT_PLACE}, new float[]{x, y}, null);
+                Property tempProperty = new Property(new float[]{WIDTH_PLACE, HEIGHT_PLACE}, new float[]{x, y}, root);
                 Database.saveProperty(tempProperty);
                 x += 49;
             }
@@ -54,10 +56,26 @@ public class Municipality implements MunicipalityInterface {
         return null;
     }
 
+    public Property buyPropertyForOne(float[] scales, float[] coordinate, Character owner) {
+        account = owner.getAccount();
+        Property returnProperty = null;
+        for (Property tempProperty : Database.LoadProperties()) {
+            if (tempProperty.getScales()[0] == scales[0] && tempProperty.getScales()[1] == scales[1] && tempProperty.getCoordinate()[0] == coordinate[0] && tempProperty.getCoordinate()[1] == coordinate[1]) {
+                System.out.println("W : " + tempProperty.getScales()[0] + ", H : " + tempProperty.getScales()[1]);
+                System.out.println("X : " + tempProperty.getCoordinate()[0] + ", Y : " + tempProperty.getCoordinate()[1]);
+                returnProperty = tempProperty;
+                owner.setProperties(returnProperty);
+                Database.updateCharacter("money", owner);
+                Database.BuyProperty(owner, tempProperty);
+            }
+        }
+        return returnProperty;
+    }
+
     public Property buyProperty(float[] scales, float[] coordinate, Character owner) {
         account = owner.getAccount();
         Property returnProperty = null;
-        for (Property tempProperty : properties) {
+        for (Property tempProperty : Database.LoadProperties()) {
             if (tempProperty.getScales()[0] == scales[0] && tempProperty.getScales()[1] == scales[1] && tempProperty.getCoordinate()[0] == coordinate[0] && tempProperty.getCoordinate()[1] == coordinate[1]) {
                 System.out.println("W : " + tempProperty.getScales()[0] + ", H : " + tempProperty.getScales()[1]);
                 System.out.println("X : " + tempProperty.getCoordinate()[0] + ", Y : " + tempProperty.getCoordinate()[1]);

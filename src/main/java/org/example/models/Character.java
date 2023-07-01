@@ -21,7 +21,7 @@ public class Character implements CharacterInterface {
     private ArrayList<Property> properties = new ArrayList<>();
 
     private Property inPosition;
-    Character root;
+    Character root = Database.root;
     Character mayor;
     private City city;
     private Municipality municipality;
@@ -112,12 +112,12 @@ public class Character implements CharacterInterface {
         System.out.println("1. buy from mayor/players");
         System.out.println("2. to be hired");
         System.out.println("3. buy industry's products");
-
+        System.out.println("4. cancel and back");
         try {
             Scanner test = new Scanner(System.in);
             switch (PropertyScan.nextInt()) {
                 case 1 -> {
-                    if (inTime.getOwner() == mayor && inTime.isForSale()) {
+                    if (inTime.getOwner() == root && inTime.isForSale()) {
                         System.out.println("you can buy this place from mayor");
                         if (inTime.getPrice() <= this.getAccount().getMoney()) {
                             System.out.println("if you want to buy this,");
@@ -173,8 +173,10 @@ public class Character implements CharacterInterface {
 //                        and it will show a menu of this property
                     }
                 }
+                case 4 -> Game.city.beginGame(this);
             }
-        } catch (InputMismatchException e) {
+        } catch (
+                InputMismatchException e) {
             System.out.println("Invalid input. Please enter a valid integer.");
             positionProcessing();
         }

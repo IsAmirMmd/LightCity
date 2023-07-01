@@ -206,11 +206,7 @@ public class Database {
             statement.setFloat(2, height);
             statement.setFloat(3, xCoordinate);
             statement.setFloat(4, yCoordinate);
-            if (property.getOwner() == null) {
-                statement.setString(5, "mayor");
-            } else {
-                statement.setString(5, property.getOwner().getUserInfo().getUsername());
-            }
+            statement.setString(5, property.getOwner().getUserInfo().getUsername());
             statement.setFloat(6, property.getPrice());
             statement.setString(7, property.getIndustryTitle());
             statement.executeUpdate();
@@ -473,14 +469,15 @@ public class Database {
         }
     }
 
-    public static void updateBankAccount(String username, float newMoney) {
-        String updateQuery = "UPDATE `bank-account` SET `money`=? WHERE `username`=?";
-
+    public static void updateBankAccount(String username, float newMoney, Date date) {
+        String updateQuery = "UPDATE `bank-account` SET `money`=? AND `last`=? WHERE `username`=?";
+        String last = date.toString();
         try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
              PreparedStatement statement = connection.prepareStatement(updateQuery)) {
 
             statement.setFloat(1, newMoney);
-            statement.setString(2, username);
+            statement.setString(2, last);
+            statement.setString(3, username);
             statement.executeUpdate();
 
         } catch (SQLException e) {
@@ -526,7 +523,7 @@ public class Database {
     }
 
     public static void saveJob(Job job) {
-        String insertQuery = "INSERT INTO `job`(`title`, `income`, `inid`) VALUES (?,?,?)";
+        String insertQuery = "INSERT INTO `job`(`title`, `income`, `inid`,`username`) VALUES (?,?,?,?)";
 
         try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
              PreparedStatement statement = connection.prepareStatement(insertQuery)) {
@@ -537,6 +534,7 @@ public class Database {
             statement.setString(1, title);
             statement.setFloat(2, money);
             statement.setString(3, IndustyID);
+            statement.setString(4, job.getUser());
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -555,7 +553,8 @@ public class Database {
                 String title = resultSet.getString("title");
                 float income = resultSet.getFloat("income");
                 String industryId = resultSet.getString("inid");
-                Job job = new Job(title, income, industryId);
+                String username = resultSet.getString("username");
+                Job job = new Job(title, income, industryId, username);
                 jobs.add(job);
             }
 
